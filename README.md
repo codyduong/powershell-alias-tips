@@ -49,7 +49,7 @@ View [Caveats](#caveats)
 Install from PowerShell Gallery
 
 ```powershell
-Install-Module alias-tips
+Install-Module alias-tips -AllowClobber
 ```
 
 ## Usage

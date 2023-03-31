@@ -4,7 +4,7 @@ param(
 
 # $PSConsoleHostReadLineDef = if ($funcInfo = Get-Command PSConsoleHostReadLine -ErrorAction SilentlyContinue) { $funcInfo.Definition }
 
-. $PSScriptRoot\alias-tips.ps1
+. $PSScriptRoot\tips.ps1
 
 # TODO PREVENT OVERWRITE OF EXISTING PSCONSOLEHOSTREADLINE
 $script:DefaultPSConsoleHostReadlineDef = {

@@ -73,12 +73,13 @@ param(
     [Parameter()][switch]$Publish
 )
 
-$Name = if ([string]::IsNullOrEmpty($Name)) { 'alias-tips' } else { $Name }
+$Path = if ([string]::IsNullOrEmpty($Path)) { '.\alias-tips' } else { $Path }
 $NuGetApiKey = if ([string]::IsNullOrEmpty($NuGetApiKey)) { "$(Get-Content -Path .env)" -replace ".*=" } else { $NuGetApiKey }
+$PSBoundParameters.Remove('Publish')
 
-Copy-Item src/** -Destination $Name -Include **
+Copy-Item src/** -Destination $Path -Include **
 if ($Publish -ne $true) {
-  Publish-Module -Name $Name -NuGetApiKey $NuGetApiKey -WhatIf @PSBoundParameters
+  Publish-Module -Path $Path -NuGetApiKey $NuGetApiKey -Verbose -WhatIf @PSBoundParameters
 } else {
-  Publish-Module -Name $Name -NuGetApiKey $NuGetApiKey @PSBoundParameters
+  Publish-Module -Path $Path -NuGetApiKey $NuGetApiKey -Verbose @PSBoundParameters
 }
