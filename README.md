@@ -59,8 +59,7 @@ Install-Module alias-tips -AllowClobber
 Import-Module alias-tips
 ```
 
-Alternatively, use the Find-AliasTips command after all your aliases have been declared. Set the
-first arg when loading alias-tips to `1` to disable loading aliases upon module import
+Alternatively, use the `Find-AliasTips` command to refresh `alias-tips`.
 
 ```powershell
 Import-Module alias-tips
@@ -71,7 +70,7 @@ Find-AliasTips
 ```
 
 Note that `Import-Module alias-tips` and `Find-AliasTips` can be expensive operations if you have
-a lot of aliases defined.
+a lot of aliases defined. So use sparingly.
 
 ## Caveats
 
