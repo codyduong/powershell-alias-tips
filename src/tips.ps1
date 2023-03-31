@@ -1,5 +1,5 @@
 . $PSScriptRoot\Command.ps1
-. $PSScriptRoot\QuickAlias.ps1
+. $PSScriptRoot\Alias.ps1
 
 function script:SeperateCommand() {
   param(
