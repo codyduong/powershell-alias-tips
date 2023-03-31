@@ -31,8 +31,20 @@ $global:AliasTipCommandsPattern = Get-CommandsPattern
 # $args Anchor (([^\S\r\n]|[^\S\r\n]``\r?\n)+\`$args)
 # Whitespace   (\s|``\r?\n)*
 # End Anchor   ($|[|;`n])
-$ProxyFunctionRegex = "(^|[;`n])(\s*)(?<cmd>($AliasTipCommandsPattern))(?<params>(([^\S\r\n]|[^\S\r\n]``\r?\n)+\S+)*)(([^\S\r\n]|[^\S\r\n]``\r?\n)+\`$args)(\s|``\r?\n)*($|[|;`n])"
-$ProxyFunctionRegexNoArgs = "(^|[;`n])(\s*)(?<cmd>($AliasTipCommandsPattern))(?<params>(([^\S\r\n]|[^\S\r\n]``\r?\n)+\S+)*)(\s|``\r?\n)*($|[|;`n])"
+function Get-ProxyFunctionRegex () {
+  param (
+    [Parameter(Mandatory, ValueFromPipeline = $true)][string]${CommandPattern}
+  )
+
+  "(^|[;`n])(\s*)(?<cmd>($CommandPattern))(?<params>(([^\S\r\n]|[^\S\r\n]``\r?\n)+\S+)*)(([^\S\r\n]|[^\S\r\n]``\r?\n)+\`$args)(\s|``\r?\n)*($|[|;`n])"
+} 
+function Get-ProxyFunctionRegexNoArgs () {
+  param (
+    [Parameter(Mandatory, ValueFromPipeline = $true)][string]${CommandPattern}
+  )
+
+  "(^|[;`n])(\s*)(?<cmd>($CommandPattern))(?<params>(([^\S\r\n]|[^\S\r\n]``\r?\n)+\S+)*)(\s|``\r?\n)*($|[|;`n])"
+}
 
 function Format-CleanCommand() {
   param(
@@ -55,7 +67,7 @@ function Get-CommandMatcher() {
   }
 
   # The parse is a bit naive...
-  if ($Command -match $ProxyFunctionRegexNoArgs) {
+  if ($Command -match $AliasTipsProxyFunctionRegexNoArgs) {
     # Clean up the command by removing extra delimiting whitespace and backtick preceding newlines
     $CommandString = ("$($matches['cmd'].TrimStart())") | Format-CleanCommand
 

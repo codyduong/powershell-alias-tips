@@ -1,6 +1,10 @@
 param(
+  [bool]$LoadAliasOnImport,
+  [bool]$SynchronousLoad,
   [bool]$Debug
 )
+
+$LoadAliasOnImport = $(If ($PSBoundParameters.ContainsKey('LoadAliasOnImport')) { $LoadAliasOnImport } else { $true })
 
 # $PSConsoleHostReadLineDef = if ($funcInfo = Get-Command PSConsoleHostReadLine -ErrorAction SilentlyContinue) { $funcInfo.Definition }
 
@@ -18,7 +22,8 @@ $script:DefaultPSConsoleHostReadlineDef = {
 $exportModuleMemberParams = @{
   Function = @(
     'PSConsoleHostReadLine',
-    'Find-AliasTips'
+    'Find-AliasTips',
+    'Start-FindAliasTips'
   )
   Variable = @()
 }
