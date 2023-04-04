@@ -13,7 +13,7 @@ function Get-AliasHash() {
     # validate there is a command
     if ($ProxyDef -match $AliasTipsProxyFunctionRegex) {
       $CleanedCommand = ("$($matches['cmd'].TrimStart()) $($matches['params'])") | Format-CleanCommand
-      if ($ProxyDef -contains '$args') {
+      if ($ProxyDef -match '\$args') {
         $Hash[$CleanedCommand + ' $args'] = $ProxyName
       }
 
@@ -26,7 +26,6 @@ function Get-AliasHash() {
     $aliasName = $_ | Select-Object -ExpandProperty 'Name'
     $aliasDef = $($_ | Select-Object -ExpandProperty 'Definition') | Format-CleanCommand
     $hash[$aliasDef] = $aliasName
-    $hash[$aliasDef + ' $args'] = $aliasName
   }
 
   return $hash

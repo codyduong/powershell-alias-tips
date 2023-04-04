@@ -79,22 +79,17 @@ a lot of aliases defined. So use sparingly.
 This tool will read all available aliases including custom aliases defined using the `function` syntax.
 However, it is limited and naive in it's approach.
 
-For example, this will get parsed by alias-tips correctly.
+### Example Alias Tip Interactions
 
-✅ Valid function alias
+#### ✅ Simple Function Alias
 ```powershell
 function grbi {
 	git rebase -i $args
 }
 ```
+**NOTE**: Alias-tips right now has no way of knowing `-i` is equivalent to `--interactive`.
 
-But it will only alias tip to grbi, if the user actually uses the `-i` flag.
-Alias-tips right now has no way of knowing `-i` is equivalent to `--interactive` .
-
-Also, while there is some naive support for parsing commands inside functions, it is very naive. It will
-not work when there are other PowerShell variables passed to the command.
-
-❌ No alias tips here (yet...)
+#### ✅ Function Alias with simple variable assignment
 ```powershell
 function gcm {
 	$MainBranch = Get-Git-MainBranch
@@ -102,6 +97,27 @@ function gcm {
 	git checkout $MainBranch $args
 }
 ```
+#### ❌ Function Alias with variables dependent on `$args`
+```powershell
+function someAlias {
+	$OtherArgs = $args | ForEach-Object {
+		$_.key
+	}
+
+	someCommand $OtherArgs
+}
+```
+
+#### ❌ Function Alias with complex variable assignment
+```powershell
+function someAlias {
+	$A = "foobar"
+	$B = $A + " $args"
+
+	someCommand $B
+}
+```
+**NOTE**: Complex in this manner referring to the multi-step assignment.
 
 ### Overwrites `function PSConsoleHostReadLine`
 
