@@ -1,7 +1,7 @@
 . $PSScriptRoot\Command.ps1
 
 # Return a naive hashtable of possible aliases
-function Get-AliasHash() {
+function Get-AliasHash {
   $Hash = @{}
 
   # generate aliases for commands aliases via function

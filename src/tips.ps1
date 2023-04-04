@@ -1,7 +1,7 @@
 . $PSScriptRoot\Command.ps1
 . $PSScriptRoot\Alias.ps1
 
-function script:SeperateCommand() {
+function script:SeperateCommand {
   param(
     [Parameter(Mandatory)][string]$Line
   )
@@ -49,7 +49,7 @@ $script:AliasHash = @{}
 if ($Debug) { Write-Host $AliasHash }
 
 # Attempts to find an alias
-function Find-Alias() {
+function Find-Alias {
   param(
     [Parameter(Mandatory)][string]$Command
   )
@@ -117,7 +117,7 @@ function Find-Alias() {
   }
 }
 
-function Find-AliasTips() {
+function Find-AliasTips {
   $CommandsPattern = Get-CommandsPattern
 
   $global:AliasTipsProxyFunctionRegex = $CommandsPattern | Get-ProxyFunctionRegex 
@@ -126,7 +126,7 @@ function Find-AliasTips() {
   $script:AliasHash = Get-AliasHash
 }
 
-function Start-FindAliasTips() {
+function Start-FindAliasTips {
   if (-not $script:AliasTipsThreadJob) {
     $script:AliasTipsThreadJob = Start-ThreadJob -Name 'Find-AliasTips' -StreamingHost $Host {
       param(

@@ -1,4 +1,4 @@
-function Get-CommandsPattern() {
+function Get-CommandsPattern {
   (Get-Command * | ForEach-Object {
     $CommandUnsafe = $_ | Select-Object -ExpandProperty 'Name'
     $Command = [Regex]::Escape($CommandUnsafe)
@@ -31,14 +31,14 @@ $global:AliasTipCommandsPattern = Get-CommandsPattern
 # $args Anchor (([^\S\r\n]|[^\S\r\n]``\r?\n)+\`$args)
 # Whitespace   (\s|``\r?\n)*
 # End Anchor   ($|[|;`n])
-function Get-ProxyFunctionRegex () {
+function Get-ProxyFunctionRegex {
   param (
     [Parameter(Mandatory, ValueFromPipeline = $true)][string]${CommandPattern}
   )
 
   "(^|[;`n])(\s*)(?<cmd>($CommandPattern))(?<params>(([^\S\r\n]|[^\S\r\n]``\r?\n)+\S+)*)(([^\S\r\n]|[^\S\r\n]``\r?\n)+\`$args)(\s|``\r?\n)*($|[|;`n])"
 } 
-function Get-ProxyFunctionRegexNoArgs () {
+function Get-ProxyFunctionRegexNoArgs {
   param (
     [Parameter(Mandatory, ValueFromPipeline = $true)][string]${CommandPattern}
   )
@@ -46,7 +46,7 @@ function Get-ProxyFunctionRegexNoArgs () {
   "(^|[;`n])(\s*)(?<cmd>($CommandPattern))(?<params>(([^\S\r\n]|[^\S\r\n]``\r?\n)+\S+)*)(\s|``\r?\n)*($|[|;`n])"
 }
 
-function Format-CleanCommand() {
+function Format-CleanCommand {
   param(
     [Parameter(Mandatory, ValueFromPipeline = $true)][string]${Command}
   )
@@ -55,7 +55,7 @@ function Format-CleanCommand() {
 }
 
 # Returns a regex to match with
-function Get-CommandMatcher() {
+function Get-CommandMatcher {
   param(
     [Parameter(Mandatory, ValueFromPipeline = $true)][string]${Command},
     [Parameter()][switch]${Simple}
@@ -210,6 +210,6 @@ function Format-CommandAST {
   }
 }
 
-function Clear-AliasTipsInternalASTResults() {
+function Clear-AliasTipsInternalASTResults {
   Clear-Variable AliasTipsInternalASTResults_* -Scope Global
 }
