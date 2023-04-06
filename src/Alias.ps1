@@ -26,6 +26,7 @@ function Get-AliasHash {
     $aliasName = $_ | Select-Object -ExpandProperty 'Name'
     $aliasDef = $($_ | Select-Object -ExpandProperty 'Definition') | Format-CleanCommand
     $hash[$aliasDef] = $aliasName
+    $hash[$aliasDef + ' $args'] = $aliasName
   }
 
   return $hash
