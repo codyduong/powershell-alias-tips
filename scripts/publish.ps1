@@ -77,9 +77,7 @@ $Path = if ([string]::IsNullOrEmpty($Path)) { '.\alias-tips' } else { $Path }
 $NuGetApiKey = if ([string]::IsNullOrEmpty($NuGetApiKey)) { "$(Get-Content -Path .env)" -replace ".*=" } else { $NuGetApiKey }
 $PSBoundParameters.Remove('Publish')
 
+Remove-Item $Path -Include ** -Recurse -ErrorAction SilentlyContinue
+New-Item -Path $Path -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
 Copy-Item src/** -Destination $Path -Include **
-if ($Publish -ne $true) {
-  Publish-Module -Path $Path -NuGetApiKey $NuGetApiKey -Verbose -WhatIf @PSBoundParameters
-} else {
-  Publish-Module -Path $Path -NuGetApiKey $NuGetApiKey -Verbose @PSBoundParameters
-}
+Publish-Module -Path $Path -NuGetApiKey $NuGetApiKey -Verbose -WhatIf:$(-not $Publish) @PSBoundParameters

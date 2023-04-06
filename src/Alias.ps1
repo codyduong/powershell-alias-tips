@@ -1,7 +1,7 @@
 . $PSScriptRoot\Command.ps1
 
 # Return a naive hashtable of possible aliases
-function Get-AliasHash() {
+function Get-AliasHash {
   $Hash = @{}
 
   # generate aliases for commands aliases via function
@@ -13,7 +13,7 @@ function Get-AliasHash() {
     # validate there is a command
     if ($ProxyDef -match $AliasTipsProxyFunctionRegex) {
       $CleanedCommand = ("$($matches['cmd'].TrimStart()) $($matches['params'])") | Format-CleanCommand
-      if ($ProxyDef -contains '$args') {
+      if ($ProxyDef -match '\$args') {
         $Hash[$CleanedCommand + ' $args'] = $ProxyName
       }
 

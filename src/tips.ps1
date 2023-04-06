@@ -1,13 +1,13 @@
 . $PSScriptRoot\Command.ps1
 . $PSScriptRoot\Alias.ps1
 
-function script:SeperateCommand() {
+function script:SeperateCommand {
   param(
     [Parameter(Mandatory)][string]$Line
   )
 
   if ($Line -match "(?<cmd>.*)(?<sep>;|(\|\|)|(&&))(?<rest>.*)") {
-    if ($Debug) { Write-Host "Splliting line into $($matches['cmd']), $($matches['sep']), and $($matches['rest'])" }
+    if ($Debug) { Write-Host "Splitting line into $($matches['cmd']), $($matches['sep']), and $($matches['rest'])" }
     $LeftHalf = Find-Alias($matches['cmd'])
     $RightHalf = SeperateCommand $($matches['rest'])
 
@@ -44,12 +44,12 @@ function PSConsoleHostReadLine {
   }
 }
 
-$script:AliasHash
+$script:AliasHash = @{}
 
 if ($Debug) { Write-Host $AliasHash }
 
 # Attempts to find an alias
-function Find-Alias() {
+function Find-Alias {
   param(
     [Parameter(Mandatory)][string]$Command
   )
@@ -59,26 +59,44 @@ function Find-Alias() {
   if ($Alias) {
     return $Alias
   }
+
+  # TODO check if it is an alias, expand it back out to check if there is a better alias
   
   $Regex = Get-CommandMatcher $Command
   if ($Regex -eq "") {
     return ""
   }
+  $SimpleSubRegex ="$([Regex]::Escape($($Command | Format-CleanCommand).Split(" ")[0]))[^`$`n]*\`$"
   
   $Aliases = @("")
-  if ($Debug) { Write-Host $Regex }
+  if ($Debug) { Write-Host "`n$Regex`n`n$SimpleSubRegex`n" }
+
+  # Create a new AliasHash with evaluated expression
+  $AliasHashEvaluated = $AliasHash.Clone()
   $AliasHash.GetEnumerator() | ForEach-Object {
     if ($_.key -match $Regex) {
       $Aliases += $_.key
     }
-  }
 
-  if ($Debug) { Write-Host $Aliases }
+    # Substitute commands using ExecutionContext if possible
+    # Check if we have anything that has a $(...)
+    if ($_.key -match $SimpleSubRegex) {
+      $NewKey = Format-CommandAST($_.value)
+      if ($NewKey -and $($NewKey -replace '\$args','') -match $Regex) {
+        $Aliases += $($NewKey -replace '\$args','').Trim()
+        $AliasHashEvaluated[$NewKey] = $_.value
+      }
+    }
+  }
+  Clear-AliasTipsInternalASTResults
+
+  if ($Debug) { Write-Host $($Aliases -Join ",") }
   # Use the longest candiate
-  $Alias = ($Aliases | Sort-Object -Descending -Property Length)[0]
-  if ($Alias) {
+  $AliasCandidate = ($Aliases | Sort-Object -Descending -Property Length)[0]
+  $Alias = ""
+  if ($AliasCandidate) {
     $Remaining = "$($Command)"
-    $CleanAlias = "$($Alias)" | Format-CleanCommand
+    $CleanAlias = "$($AliasCandidate)" | Format-CleanCommand
     $AttemptSplit = $CleanAlias -split " "
 
     $AttemptSplit | ForEach-Object {
@@ -86,9 +104,12 @@ function Find-Alias() {
       $Remaining = $Pattern.replace($Remaining, "", 1)
     }
 
-    $Alias = ($AliasHash[$Alias] + $Remaining) | Format-CleanCommand
-    if ($Remaining -and $AliasHash[$Alias + ' $args']) {
-      $Alias = ($AliasHash[$Alias + ' $args'] + $Remaining) | Format-CleanCommand
+    if (-not $Remaining) {
+      $Alias = ($AliasHashEvaluated[$AliasCandidate]) | Format-CleanCommand
+    }
+    if ($AliasHashEvaluated[$AliasCandidate + ' $args']) {
+      # TODO: Sometimes superflous args aren't at the end... Fix this.
+      $Alias = ($AliasHashEvaluated[$AliasCandidate + ' $args'] + $Remaining) | Format-CleanCommand
     }
     if ($Alias -ne $Command) {
       return $Alias
@@ -96,38 +117,27 @@ function Find-Alias() {
   }
 }
 
-function Find-AliasTips() {
+function Find-AliasTips {
   $CommandsPattern = Get-CommandsPattern
 
-  # THANKS TO csc027 for the original code https://github.com/csc027
-  # Taken from: https://github.com/dahlbyk/posh-git/blob/ad8278e90ad8180c18e336676e490d921615e506/src/GitTabExpansion.ps1#L73-L87
-  #
-  # The regular expression here is roughly follows this pattern:
-  #
-  # <begin anchor><whitespace>*<command>(<whitespace><parameter>)*<whitespace>+<$args><whitespace>*<end anchor>
-  #
-  # The delimiters inside the parameter list and between some of the elements are non-newline whitespace characters ([^\S\r\n]).
-  # In those instances, newlines are only allowed if they preceded by a non-newline whitespace character.
-  #
-  # Begin anchor (^|[;`n])
-  # Whitespace   (\s*)
-  # Any Command  (?<cmd>)
-  # Parameters   (?<params>(([^\S\r\n]|[^\S\r\n]``\r?\n)+\S+)*)
-  # $args Anchor (([^\S\r\n]|[^\S\r\n]``\r?\n)+\`$args)
-  # Whitespace   (\s|``\r?\n)*
-  # End Anchor   ($|[|;`n])
   $global:AliasTipsProxyFunctionRegex = $CommandsPattern | Get-ProxyFunctionRegex 
   $global:AliasTipsProxyFunctionRegexNoArgs = $CommandsPattern | Get-ProxyFunctionRegexNoArgs
 
   $script:AliasHash = Get-AliasHash
 }
 
-function Start-FindAliasTips() {
+function Start-FindAliasTips {
   if (-not $script:AliasTipsThreadJob) {
     $script:AliasTipsThreadJob = Start-ThreadJob -Name 'Find-AliasTips' -StreamingHost $Host {
-      return $(Get-CommandsPattern)
-    } -ThrottleLimit 1
-    $JobResults = $AliasTipsThreadJob | Receive-Job
+      param(
+        [Parameter(Mandatory, Position=0)][string]$GetCommandsPattern
+      )
+      return $(& $([scriptblock]::Create($GetCommandsPattern)))
+    } -ThrottleLimit 1 -Arg $(Get-Item -Path Function:\Get-CommandsPattern | Select-Object -ExpandProperty 'Definition')
+    $JobResults = $AliasTipsThreadJob | Receive-Job -Wait
+    if (-not $Debug) {
+      Remove-Job -Name 'Find-AliasTips'
+    }
     $global:AliasTipsProxyFunctionRegex = $JobResults | Get-ProxyFunctionRegex
     $global:AliasTipsProxyFunctionRegexNoArgs = $JobResults | Get-ProxyFunctionRegexNoArgs
     $script:AliasHash = Get-AliasHash
