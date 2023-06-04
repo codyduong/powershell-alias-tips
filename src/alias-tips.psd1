@@ -4,7 +4,7 @@
 RootModule = 'alias-tips.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.3.0'
+ModuleVersion = '1.0.0-rc1'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()

@@ -12,8 +12,6 @@ function Get-CommandsPattern {
   }) -Join '|'
 }
 
-$global:AliasTipCommandsPattern = Get-CommandsPattern
-
 # THANKS TO csc027 for the original code https://github.com/csc027
 # Taken from: https://github.com/dahlbyk/posh-git/blob/ad8278e90ad8180c18e336676e490d921615e506/src/GitTabExpansion.ps1#L73-L87
 #
@@ -33,14 +31,14 @@ $global:AliasTipCommandsPattern = Get-CommandsPattern
 # End Anchor   ($|[|;`n])
 function Get-ProxyFunctionRegex {
   param (
-    [Parameter(Mandatory, ValueFromPipeline = $true)][string]${CommandPattern}
+    [Parameter(Mandatory, Position=0, ValueFromPipeline = $true)][string]${CommandPattern}
   )
 
   "(^|[;`n])(\s*)(?<cmd>($CommandPattern))(?<params>(([^\S\r\n]|[^\S\r\n]``\r?\n)+\S+)*)(([^\S\r\n]|[^\S\r\n]``\r?\n)+\`$args)(\s|``\r?\n)*($|[|;`n])"
 } 
 function Get-ProxyFunctionRegexNoArgs {
   param (
-    [Parameter(Mandatory, ValueFromPipeline = $true)][string]${CommandPattern}
+    [Parameter(Mandatory, Position=0, ValueFromPipeline = $true)][string]${CommandPattern}
   )
 
   "(^|[;`n])(\s*)(?<cmd>($CommandPattern))(?<params>(([^\S\r\n]|[^\S\r\n]``\r?\n)+\S+)*)(\s|``\r?\n)*($|[|;`n])"
@@ -48,7 +46,7 @@ function Get-ProxyFunctionRegexNoArgs {
 
 function Format-CleanCommand {
   param(
-    [Parameter(Mandatory, ValueFromPipeline = $true)][string]${Command}
+    [Parameter(Mandatory, Position=0, ValueFromPipeline = $true)][string]${Command}
   )
 
   return ($Command -replace '`\r?\n', ' ' -replace '\s+', ' ').Trim()

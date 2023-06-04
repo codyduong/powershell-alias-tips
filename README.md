@@ -62,7 +62,9 @@ Import-Module alias-tips
 Alternatively, use the `Find-AliasTips` command to refresh `alias-tips`.
 
 ```powershell
-Import-Module alias-tips
+Import-Module alias-tips -ArgumentList 0
+# This will disable alias generation upon module loading, you must call or have called Find-AliasTips for
+# alias-tips to work. Aliases are stored in %USERPROFILE%/.alias-tips-hash
 
 Set-Alias g git
 
@@ -70,7 +72,8 @@ Find-AliasTips
 ```
 
 Note that `Import-Module alias-tips` and `Find-AliasTips` can be expensive operations if you have
-a lot of aliases defined. So use sparingly.
+a lot of aliases defined. If you aren't changing aliases often, it may be beneficial to disable hash generation 
+upon profile start.
 
 ## Caveats
 
