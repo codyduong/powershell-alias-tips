@@ -1,5 +1,5 @@
-Write-Host $(Measure-Command { . $PSScriptRoot\Command.ps1 })
-Write-Host $(Measure-Command { . $PSScriptRoot\Alias.ps1 })
+. $PSScriptRoot\Command.ps1
+. $PSScriptRoot\Alias.ps1
 
 
 $script:AliasTipsHashFile = [System.IO.Path]::Combine("$HOME", '.alias-tips-hash')
