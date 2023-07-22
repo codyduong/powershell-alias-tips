@@ -10,7 +10,7 @@ function script:SeperateCommand {
     [Parameter(Mandatory)][string]$Line
   )
 
-  if ($Line -match "(?<cmd>.*)(?<sep>;|(\|\|)|(&&))(?<rest>.*)") {
+  if ($Line -match "(?<cmd>.*)(?<sep>;|(\|\|)|(\|)|(&&))(?<rest>.*)") {
     if ($AliasTipsDebug) { Write-Host "Splitting line into $($matches['cmd']), $($matches['sep']), and $($matches['rest'])" }
     $LeftHalf = Find-Alias($matches['cmd'])
     $RightHalf = SeperateCommand $($matches['rest'])
@@ -190,13 +190,5 @@ function Start-FindAliasTips {
       })
       Set-Content -Path $AliasTipsHashFile -Value $Value
     } -ThrottleLimit 1 -ArgumentList $ArgsToThreadJob -InitializationScript $AliasTipsStringScriptBlockThreadJob
-  }
-}
-
-if ($AliasTipsLoadAliasOnImport) {
-  if ($AliasTipsSynchronousLoad) {
-    Find-AliasTips
-  } else {
-    Start-FindAliasTips
   }
 }

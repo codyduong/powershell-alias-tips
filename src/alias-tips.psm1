@@ -1,10 +1,6 @@
 param(
-  [bool]$AliasTipsLoadAliasOnImport = 1,
-  [bool]$AliasTipsSynchronousLoad = 1,
   [bool]$AliasTipsDebug = 0
 )
-
-$LoadAliasOnImport = $(If ($PSBoundParameters.ContainsKey('LoadAliasOnImport')) { $LoadAliasOnImport } else { $true })
 
 # $PSConsoleHostReadLineDef = if ($funcInfo = Get-Command PSConsoleHostReadLine -ErrorAction SilentlyContinue) { $funcInfo.Definition }
 

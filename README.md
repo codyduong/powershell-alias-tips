@@ -59,21 +59,31 @@ Install-Module alias-tips -AllowClobber
 Import-Module alias-tips
 ```
 
-Alternatively, use the `Find-AliasTips` command to refresh `alias-tips`.
-
+Everytime your aliases are updated run:
 ```powershell
-Import-Module alias-tips -ArgumentList 0
-# This will disable alias generation upon module loading, you must call or have called Find-AliasTips for
-# alias-tips to work. Aliases are stored in %USERPROFILE%/.alias-tips-hash
-
-Set-Alias g git
-
 Find-AliasTips
 ```
 
-Note that `Import-Module alias-tips` and `Find-AliasTips` can be expensive operations if you have
-a lot of aliases defined. If you aren't changing aliases often, it may be beneficial to disable hash generation 
-upon profile start.
+You **should not run** `Find-AliasTips` everytime your profile is loaded. 
+It is an expensive operation, which first parses every possible command in the
+current shell context and then 
+commands and their associated aliases in a file at `$HOME/.alias-tips-hash`
+
+## Configuration
+### Hardcore Mode
+This will prevent any commands from running and instead prompt you to use the alias
+
+### Color/Text
+Alias-tips uses `Out-Host` instead of `Write-Host`. 
+It also means colors will only work if VT (Virtual Terminal) is enabled. 
+As a consequence, in order to color the text we require ANSI Color Escape sequences 
+instead of the more familiar `[Enum]::GetValues([ConsoleColor])` values.]
+
+By default we use orange:
+```powershell
+$AliasTipsColor = '033m'
+Import-Module alias-tips
+```
 
 ## Caveats
 
