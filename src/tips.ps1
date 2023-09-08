@@ -1,5 +1,5 @@
 . $PSScriptRoot\Command.ps1
-. $PSScriptRoot\Alias.ps1
+. $PSScriptRoot\Find-AliasTips.ps1
 
 
 $script:AliasTipsHashFile = [System.IO.Path]::Combine("$HOME", '.alias-tips-hash')
@@ -19,7 +19,7 @@ function script:SeperateCommand {
     if (-not $LeftHalf) { $LeftHalf = $matches['cmd'] | Format-CleanCommand }
     # If the right half isn't found restore the right half
     if (-not $RightHalf) { $RightHalf = $matches['rest'] | Format-CleanCommand }
-    
+
     $CompleteAlias = $($LeftHalf + "$(If ($matches['sep'] -eq ';') {''} else {' '})$($matches['sep']) " + $RightHalf) | Format-CleanCommand
     # only return the alias if it is different from the line
     if ($CompleteAlias -ne $($Line | Format-CleanCommand)) {
@@ -30,6 +30,7 @@ function script:SeperateCommand {
     return Find-Alias($Line)
   }
 }
+
 
 function PSConsoleHostReadLine {
   ## Get the execution status of the last accepted user input.
@@ -46,12 +47,6 @@ function PSConsoleHostReadLine {
     $tip = "Alias tip: $alias"
     $host.UI.SupportsVirtualTerminal ? "`e[033m$tip`e[m" : $tip | Out-Host
   }
-}
-
-$script:AliasTipsHash = if (Test-Path $AliasTipsHashFile) {
-  ConvertFrom-StringData -StringData $([System.IO.File]::ReadAllText($AliasTipsHashFile)) -Delimiter "|"
-} else {
-  @{}
 }
 
 if ($AliasTipsDebug) { Write-Host $AliasTipsHash.Count }
@@ -73,13 +68,13 @@ function Find-Alias {
   }
 
   # TODO check if it is an alias, expand it back out to check if there is a better alias
-  
+
   $Regex = Get-CommandMatcher $Command
   if ($Regex -eq "") {
     return ""
   }
-  $SimpleSubRegex ="$([Regex]::Escape($($Command | Format-CleanCommand).Split(" ")[0]))[^`$`n]*\`$"
-  
+  $SimpleSubRegex = "$([Regex]::Escape($($Command | Format-CleanCommand).Split(" ")[0]))[^`$`n]*\`$"
+
   $Aliases = @("")
   if ($AliasTipsDebug) { Write-Host "`n$Regex`n`n$SimpleSubRegex`n" }
 
@@ -94,8 +89,8 @@ function Find-Alias {
     # Check if we have anything that has a $(...)
     if ($_.key -match $SimpleSubRegex) {
       $NewKey = Format-CommandAST($_.value)
-      if ($NewKey -and $($NewKey -replace '\$args','') -match $Regex) {
-        $Aliases += $($NewKey -replace '\$args','').Trim()
+      if ($NewKey -and $($NewKey -replace '\$args', '') -match $Regex) {
+        $Aliases += $($NewKey -replace '\$args', '').Trim()
         $AliasTipsHashEvaluated[$NewKey] = $_.value
       }
     }
@@ -126,69 +121,5 @@ function Find-Alias {
     if ($Alias -ne $Command) {
       return $Alias
     }
-  }
-}
-
-function Find-AliasTips {
-  $CommandsPattern = Get-CommandsPattern
-
-  $global:AliasTipsProxyFunctionRegex = $CommandsPattern | Get-ProxyFunctionRegex 
-  $global:AliasTipsProxyFunctionRegexNoArgs = $CommandsPattern | Get-ProxyFunctionRegexNoArgs
-
-  $AliasTipsHash = Get-AliasHash
-  $Value = $($AliasTipsHash.GetEnumerator() | ForEach-Object {
-    if ($_.Key.Length -ne 0) {
-      # Replaces \ with \\
-      "$($_.Key -replace "\\", "\\")|$($_.Value -replace "\\", "\\")"
-    }
-  })
-  Write-Host $UsedKeys
-  Set-Content -Path $AliasTipsHashFile -Value $Value
-}
-
-function Start-FindAliasTips {
-  <#
-  .SYNOPSIS
-
-  This is a async way of generating the .alias-tips-hash. However,
-  it lacks the context environment of the PROFILE. 
-  
-  TODO add a fix, so it will load the profile.
-  #>
-  if (-not $script:AliasTipsThreadJob) {
-    $ArgsToThreadJob = @(
-      $(Get-Item -Path Function:\Get-AliasHash | Select-Object -ExpandProperty 'Definition'),
-      $(Get-Item -Path Function:\GetProxyFunctionRegex | Select-Object -ExpandProperty 'Definition'),
-      $(Get-Item -Path Function:\GetProxyFunctionRegexNoArgs | Select-Object -ExpandProperty 'Definition'),
-      $(Get-Item -Path Function:\Format-CleanCommand | Select-Object -ExpandProperty 'Definition'),
-      $AliasTipsHashFile
-    )
-
-    Start-ThreadJob -Name 'Find-AliasTips' -StreamingHost $Host {
-      param(
-        [Parameter(Mandatory, Position=0)][string]$GetAliasHash,
-        [Parameter(Mandatory, Position=1)][string]$GetProxyFunctionRegex,
-        [Parameter(Mandatory, Position=2)][string]$GetProxyFunctionRegexNoArgs,
-        [Parameter(Mandatory, Position=3)][string]$FormatCleanCommand,
-        [Parameter(Mandatory, Position=4)][string]$AliasTipsHashFile
-      )
-      function Format-CleanCommand {
-        param(
-          [Parameter(Mandatory, Position=0, ValueFromPipeline = $true)][string]${Command}
-        )
-      
-        return $(Invoke-Command -ScriptBlock ([scriptblock]::Create($FormatCleanCommand)) -ArgumentList @($Command))
-      }
-      $global:AliasTipsHash = Invoke-Command -ScriptBlock ([scriptblock]::Create($GetAliasHash))
-      $global:AliasTipsProxyFunctionRegex = Invoke-Command -ScriptBlock ([scriptblock]::Create($GetProxyFunctionRegex))
-      $global:AliasTipsProxyFunctionRegexNoArgs = Invoke-Command -ScriptBlock ([scriptblock]::Create($GetProxyFunctionRegexNoArgs))
-      $Value = $($AliasTipsHash.GetEnumerator() | ForEach-Object {
-        if ($_.Key.Length -ne 0) {
-          # Replaces \ with \\
-          "$($_.Key -replace "\\", "\\")|$($_.Value -replace "\\", "\\")"
-        }
-      })
-      Set-Content -Path $AliasTipsHashFile -Value $Value
-    } -ThrottleLimit 1 -ArgumentList $ArgsToThreadJob -InitializationScript $AliasTipsStringScriptBlockThreadJob
   }
 }

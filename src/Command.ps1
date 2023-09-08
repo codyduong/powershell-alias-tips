@@ -6,47 +6,16 @@ function Get-CommandsPattern {
     if ($CommandUnsafe -match "(?<cmd>[^.\s]+)\.(?<ext>[^.\s]+)$") {
       $CommandWithoutExtension = [Regex]::Escape($matches['cmd'])
       return $Command, $CommandWithoutExtension
-    } else {
+    }
+    else {
       return $Command
     }
   }) -Join '|'
 }
 
-# THANKS TO csc027 for the original code https://github.com/csc027
-# Taken from: https://github.com/dahlbyk/posh-git/blob/ad8278e90ad8180c18e336676e490d921615e506/src/GitTabExpansion.ps1#L73-L87
-#
-# The regular expression here is roughly follows this pattern:
-#
-# <begin anchor><whitespace>*<command>(<whitespace><parameter>)*<whitespace>+<$args><whitespace>*<end anchor>
-#
-# The delimiters inside the parameter list and between some of the elements are non-newline whitespace characters ([^\S\r\n]).
-# In those instances, newlines are only allowed if they preceded by a non-newline whitespace character.
-#
-# Begin anchor (^|[;`n])
-# Whitespace   (\s*)
-# Any Command  (?<cmd>)
-# Parameters   (?<params>(([^\S\r\n]|[^\S\r\n]``\r?\n)+\S+)*)
-# $args Anchor (([^\S\r\n]|[^\S\r\n]``\r?\n)+\`$args)
-# Whitespace   (\s|``\r?\n)*
-# End Anchor   ($|[|;`n])
-function Get-ProxyFunctionRegex {
-  param (
-    [Parameter(Mandatory, Position=0, ValueFromPipeline = $true)][string]${CommandPattern}
-  )
-
-  "(^|[;`n])(\s*)(?<cmd>($CommandPattern))(?<params>(([^\S\r\n]|[^\S\r\n]``\r?\n)+\S+)*)(([^\S\r\n]|[^\S\r\n]``\r?\n)+\`$args)(\s|``\r?\n)*($|[|;`n])"
-} 
-function Get-ProxyFunctionRegexNoArgs {
-  param (
-    [Parameter(Mandatory, Position=0, ValueFromPipeline = $true)][string]${CommandPattern}
-  )
-
-  "(^|[;`n])(\s*)(?<cmd>($CommandPattern))(?<params>(([^\S\r\n]|[^\S\r\n]``\r?\n)+\S+)*)(\s|``\r?\n)*($|[|;`n])"
-}
-
 function Format-CleanCommand {
   param(
-    [Parameter(Mandatory, Position=0, ValueFromPipeline = $true)][string]${Command}
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline = $true)][string]${Command}
   )
 
   return ($Command -replace '`\r?\n', ' ' -replace '\s+', ' ').Trim()
@@ -157,21 +126,23 @@ function Format-CommandAST {
     $($matches['params'] | Format-CleanCommand) -split " " | ForEach-Object {
       if ($_ -match '\$') {
         # Make sure it is not an automatic variable
-        if ($_ -match  "(\`$)($AUTOMATIC_VARIBLES_TO_SUPRESS)") {
+        if ($_ -match "(\`$)($AUTOMATIC_VARIBLES_TO_SUPRESS)") {
 
-        } else {
+        }
+        else {
           $VarsToResolve += $_ -replace "[^$`n]*(?=\$)", ""
         }
       }
     }
-  } else {
+  }
+  else {
     return ""
   }
 
   $VarsReplaceHash = @{}
   Get-Variable AliasTipsInternalASTResults_* | ForEach-Object {
     if ($_.Value) {
-      $VarsReplaceHash[$($_.Name -replace "AliasTipsInternalASTResults_","")] = $_.Value
+      $VarsReplaceHash[$($_.Name -replace "AliasTipsInternalASTResults_", "")] = $_.Value
     }
   }
 
@@ -184,11 +155,11 @@ function Format-CommandAST {
       # Attempt to find the definition based on the ast
       # TODO: handle nested script blocks
       $FoundAssignment = $DefAst.Find({
-        $args[0] -is [System.Management.Automation.Language.VariableExpressionAst] -and
-        $("$($args[0].Extent)" -eq "$Var")
-      }, $false)
+          $args[0] -is [System.Management.Automation.Language.VariableExpressionAst] -and
+          $("$($args[0].Extent)" -eq "$Var")
+        }, $false)
       if ($FoundAssignment -and -not $VarsReplaceHash[$Var]) {
-        $CommandToEval = $($FoundAssignment.Parent -replace "[^=`n]*=","").Trim()
+        $CommandToEval = $($FoundAssignment.Parent -replace "[^=`n]*=", "").Trim()
         # Super naive LOL! Hopefully the command isn't destructive!
         $Evaluated = Invoke-Command -ScriptBlock $([scriptblock]::Create("$CommandToEval -ErrorAction SilentlyContinue"))
         if ($Evaluated) {
@@ -200,7 +171,7 @@ function Format-CommandAST {
 
     $VarsReplaceHash.GetEnumerator() | ForEach-Object {
       if ($_.Value) {
-        $ReconstructedCommand = $ReconstructedCommand -replace $([regex]::Escape($_.key)),$_.Value
+        $ReconstructedCommand = $ReconstructedCommand -replace $([regex]::Escape($_.key)), $_.Value
       }
     }
 

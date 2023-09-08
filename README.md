@@ -77,7 +77,7 @@ This will prevent any commands from running and instead prompt you to use the al
 Alias-tips uses `Out-Host` instead of `Write-Host`. 
 It also means colors will only work if VT (Virtual Terminal) is enabled. 
 As a consequence, in order to color the text we require ANSI Color Escape sequences 
-instead of the more familiar `[Enum]::GetValues([ConsoleColor])` values.]
+instead of the more familiar `[Enum]::GetValues([ConsoleColor])` values.
 
 By default we use orange:
 ```powershell
