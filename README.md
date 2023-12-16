@@ -4,17 +4,13 @@
 
 # Alias Tips
 
-A [PowerShell](https://microsoft.com/powershell) module inspired by the [Oh My Zsh](https://github.com/robbyrussell/oh-my-zsh) plugin [alias-tips](https://github.com/djui/alias-tips)
+*Alias-Tips* is a [PowerShell](https://microsoft.com/powershell) module dedicated to help remembering those shell aliases and Git aliases you once defined. Inspired by the [Oh My Zsh](https://github.com/robbyrussell/oh-my-zsh) plugin [alias-tips](https://github.com/djui/alias-tips)
 
-> A ~~Zsh~~ PowerShell plugin to help remembering those shell aliases and Git aliases you once defined.
->
-> The idea is that you might be too afraid to execute aliases defined because you can't remember them correctly, or just have forgotten about some aliases, or that aliases for your daily commands even exist.
-
-It works by picking up all defined aliases/functions. Then it will try to compare any command you run, and see if you have an alias that might be helpful.
+The idea is that you might be too afraid to execute aliases defined because you can't remember them correctly, or just have forgotten about some aliases, or that aliases for your daily commands even exist.
 
 ## Demonstration
 
-![Gif Demonstration of Alias Tips](./docs/demo.gif)
+![Gif Demonstration of Alias Tips](./media/demo.gif)
 
 ###### Terminal is using [ `oh-my-posh` ](https://ohmyposh.dev/) with [ `M365Princess` ](https://ohmyposh.dev/docs/themes#m365princess) theme and [`git-aliases-plus`](https://github.com/codyduong/powershell-git-aliases-plus) for git aliases
 
