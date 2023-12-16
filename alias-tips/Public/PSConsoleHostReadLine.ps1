@@ -1,5 +1,5 @@
 # Store the original PSConsoleHostReadLine function when importing the module
-$global:originalReadLineFunction = $function:PSConsoleHostReadLine
+$global:AliasTipsOriginalPSConsoleHostReadLine = $function:PSConsoleHostReadLine
 
 function PSConsoleHostReadLine {
   ## Get the execution status of the last accepted user input.
@@ -18,7 +18,6 @@ function PSConsoleHostReadLine {
   }
 }
 
-# $script:moduleCleanup = {
-#   Remove-Item Function:\PSConsoleHostReadLine -Force
-#   $function:PSConsoleHostReadLine = $global:originalReadLineFunction
-# }
+Register-EngineEvent -SourceIdentifier ([System.Management.Automation.PsEngineEvent]::Exiting) -Action {
+  $function:PSConsoleHostReadLine = $global:AliasTipsOriginalPSConsoleHostReadLine
+}
