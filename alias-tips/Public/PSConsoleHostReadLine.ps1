@@ -12,13 +12,13 @@ function PSConsoleHostReadLine {
   $alias = Split-Command $Line
 
   if ($alias) {
-    $tip = (Initialize-EnvVariable "ALIASTIPS_MESSAGE" "Alias tip: {0}") -f $alias
-    $vtTip = (Initialize-EnvVariable "ALIASTIPS_TEMPLATE" "`e[033m{0}`e[m") -f $tip
+    $tip = (Initialize-EnvVariable "ALIASTIPS_MSG" "Alias tip: {0}") -f $alias
+    $vtTip = (Initialize-EnvVariable "ALIASTIPS_MSG_VT" "`e[033mAlias tip: {0}`e[m") -f $alias
     if ($tip -eq "") {
-      Write-Warning "Error formatting ALIASTIPS_MESSAGE"
+      Write-Warning "Error formatting ALIASTIPS_MSG"
     }
     if ($vtTip -eq "") {
-      Write-Warning "Error formatting ALIASTIPS_TEMPLATE"
+      Write-Warning "Error formatting ALIASTIPS_MSG_VT"
     }
     $host.UI.SupportsVirtualTerminal ? $vtTip : $tip | Out-Host
   }

@@ -4,7 +4,7 @@
 
 # Alias Tips
 
-*Alias-Tips* is a [PowerShell](https://microsoft.com/powershell) module dedicated to help remembering those shell aliases and Git aliases you once defined. Inspired by the [Oh My Zsh](https://github.com/robbyrussell/oh-my-zsh) plugin [alias-tips](https://github.com/djui/alias-tips)
+*Alias-Tips* is a [PowerShell](https://microsoft.com/powershell) module dedicated to help remembering those shell aliases you once defined. Inspired by the [Oh My Zsh](https://github.com/robbyrussell/oh-my-zsh) plugin [alias-tips](https://github.com/djui/alias-tips)
 
 The idea is that you might be too afraid to execute aliases defined because you can't remember them correctly, or just have forgotten about some aliases, or that aliases for your daily commands even exist.
 
@@ -40,7 +40,7 @@ Alias tip: mv foo bar
 
 View [Caveats](#caveats)
 
-## Installation
+## Installation and Usage
 
 Install from PowerShell Gallery
 
@@ -50,35 +50,26 @@ Install-Module alias-tips -AllowClobber
 
 ## Usage
 
+Inside your PowerShell profile
 ```powershell
-# After declaring all your aliases, import this module
 Import-Module alias-tips
 ```
 
-Everytime your aliases are updated run:
-```powershell
-Find-AliasTips
-```
-
-You **should not run** `Find-AliasTips` everytime your profile is loaded. 
-It is an expensive operation, which first parses every possible command in the
-current shell context and then 
-commands and their associated aliases in a file at `$HOME/.alias-tips-hash`
+Everytime your aliases are updated run `Find-AliasTips`. This will store a hash of all aliases
+to default: `$HOME/.alias_tips.hash`. View [Configuration][#configuration] to 
 
 ## Configuration
-### Hardcore Mode
-This will prevent any commands from running and instead prompt you to use the alias
-
-### Color/Text
-Alias-tips uses `Out-Host` instead of `Write-Host`. 
-It also means colors will only work if VT (Virtual Terminal) is enabled. 
-As a consequence, in order to color the text we require ANSI Color Escape sequences 
-instead of the more familiar `[Enum]::GetValues([ConsoleColor])` values.
-
-By default we use orange:
+*alias-tips* can be configured via Environment Variables
 ```powershell
-$AliasTipsColor = '033m'
-Import-Module alias-tips
+# Set the template message (Note the distinction between non virtual terminal and virtual terminal supported template strings
+$env:ALIASTIPS_MSG = "" # Default: "Alias tip: {0}"
+$env:ALIASTIPS_MSG_VT = "" # Default: "`e[033mAlias tip: {0}`e[m"
+
+# Set the alias hash location
+$env:ALIASTIPS_HASH_PATH = "" # Default: [System.IO.Path]::Combine("$HOME", '.alias_tips.hash')
+
+# Debug and other values
+$env:ALIASTIPS_DEBUG = "" # Default: $false
 ```
 
 ## Caveats
