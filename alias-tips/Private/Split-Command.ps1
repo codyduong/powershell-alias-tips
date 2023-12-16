@@ -5,7 +5,7 @@ function Split-Command {
   )
 
   if ($Line -match "(?<cmd>.*)(?<sep>;|(\|\|)|(\|)|(&&))(?<rest>.*)") {
-    if ($AliasTipsDebug) { Write-Host "Splitting line into $($matches['cmd']), $($matches['sep']), and $($matches['rest'])" }
+    Write-Verbose "Splitting line into $($matches['cmd']), $($matches['sep']), and $($matches['rest'])"
     $LeftHalf = Find-Alias($matches['cmd'])
     $RightHalf = Split-Command $($matches['rest'])
 

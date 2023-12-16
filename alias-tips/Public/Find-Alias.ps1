@@ -24,7 +24,7 @@ function Find-Alias {
   $SimpleSubRegex = "$([Regex]::Escape($($Command | Format-Command).Split(" ")[0]))[^`$`n]*\`$"
 
   $Aliases = @("")
-  if ($AliasTipsDebug) { Write-Host "`n$Regex`n`n$SimpleSubRegex`n" }
+  Write-Verbose "`n$Regex`n`n$SimpleSubRegex`n"
 
   # Create a new AliasHash with evaluated expression
   $AliasTipsHashEvaluated = $AliasTipsHash.Clone()
@@ -46,7 +46,7 @@ function Find-Alias {
   }
   Clear-AliasTipsInternalASTResults
 
-  if ($AliasTipsDebug) { Write-Host $($Aliases -Join ",") }
+  Write-Verbose $($Aliases -Join ",")
   # Use the longest candiate
   $AliasCandidate = ($Aliases | Sort-Object -Descending -Property Length)[0]
   $Alias = ""
