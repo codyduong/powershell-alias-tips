@@ -13,7 +13,7 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Find-Alias [[-Command] <String>] [<CommonParameters>]
+Find-Alias [-Line] <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -30,18 +30,18 @@ PS C:\> {{ Add example code here }}
 
 ## PARAMETERS
 
-### -Command
-{{ Fill Command Description }}
+### -Line
+{{ Fill Line Description }}
 
 ```yaml
 Type: String
 Parameter Sets: (All)
 Aliases:
 
-Required: False
+Required: True
 Position: 0
 Default value: None
-Accept pipeline input: True (ByValue)
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 

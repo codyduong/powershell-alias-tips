@@ -9,9 +9,9 @@ function PSConsoleHostReadLine {
   ($Line = [Microsoft.PowerShell.PSConsoleReadLine]::ReadLine($host.Runspace, $ExecutionContext, $lastRunStatus))
 
   # split line into multiple commands if possible
-  $alias = Split-Command $Line
+  $alias = Find-Alias $Line
 
-  if (-not [string]::IsNullOrEmpty($alias) -and $alias -ne $line) {
+  if (-not [string]::IsNullOrEmpty($alias) -and $alias -ne $Line) {
     $tip = (Initialize-EnvVariable "ALIASTIPS_MSG" "Alias tip: {0}") -f $alias
     $vtTip = (Initialize-EnvVariable "ALIASTIPS_MSG_VT" "`e[033mAlias tip: {0}`e[m") -f $alias
     if ($tip -eq "") {

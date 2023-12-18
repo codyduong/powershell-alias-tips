@@ -1,78 +1,44 @@
-# Attempts to find an alias
+# Attempts to find an alias for a command string (ie. can consist of chained or nested aliases)
 function Find-Alias {
   param(
-    [Parameter(ValueFromPipeline=$true)]
-    [string]$Command
+    [Parameter(Mandatory)][string]$Line
   )
 
-  process {
-    if ($AliasTipsHash -and $AliasTipsHash.Count -eq 0) {
-      $AliasTipsHash = ConvertFrom-StringData -StringData $([System.IO.File]::ReadAllText($AliasTipsHashFile)) -Delimiter "|"
-    }
-  
-    # If we can find the alias quickly, do so
-    $Alias = $AliasTipsHash[$Command.Trim()]
-    if ($Alias) {
-      Write-Verbose "Quickly found alias inside of AliasTipsHash"
-      return $Alias
-    }
-  
-    # TODO check if it is an alias, expand it back out to check if there is a better alias
-  
-    # We failed to find the alias in the hash, instead get the executed command, and attempt to generate a regex for it.
-    $Regex = Get-CommandRegex $Command
-    if ([string]::IsNullOrEmpty($Regex)) {
-      return ""
-    }
-    $SimpleSubRegex = "$([Regex]::Escape($($Command | Format-Command).Split(" ")[0]))[^`$`n]*\`$"
-  
-    $Aliases = @("")
-    Write-Verbose "`n$Regex`n`n$SimpleSubRegex`n"
-  
-    # Create a new AliasHash with evaluated expression
-    $AliasTipsHashEvaluated = $AliasTipsHash.Clone()
-    $AliasTipsHash.GetEnumerator() | ForEach-Object {
-      # Only reasonably evaluate any commands that match the one we are searching for
-      if ($_.key -match $Regex) {
-        $Aliases += $_.key
+  $tokens = @()
+  [void][System.Management.Automation.Language.Parser]::ParseInput($Line, [ref]$tokens, [ref]$null)
+
+  $queue = [System.Collections.ArrayList]::new()
+  $aliased = ""
+
+  foreach ($token in $tokens) {
+    $kind = $token.Kind
+    if ('Generic', 'StringLiteralToken', 'Generic', 'Identifier' -contains $kind) {
+      if ($queue.Count -gt 0) {
+        $queue[-1] = "$($queue[-1]) $($token.Text)"
       }
-  
-      # Substitute commands using ExecutionContext if possible
-      # Check if we have anything that has a $(...)
-      if ($_.key -match $SimpleSubRegex -and ([boolean](Initialize-EnvVariable "ALIASTIPS_FUNCTION_INTROSPECTION" $false)) -eq $true) {
-        $NewKey = Format-CommandFromExecutionContext($_.value)
-        if (-not [string]::IsNullOrEmpty($NewKey) -and $($NewKey -replace '\$args', '') -match $Regex) {
-          $Aliases += $($NewKey -replace '\$args', '').Trim()
-          $AliasTipsHashEvaluated[$NewKey] = $_.value
-        }
+      else {
+        $queue += $token.Text
       }
     }
-    Clear-AliasTipsInternalASTResults
-  
-    Write-Verbose $($Aliases -Join ",")
-    # Use the longest candiate
-    $AliasCandidate = ($Aliases | Sort-Object -Descending -Property Length)[0]
-    $Alias = ""
-    if (-not [string]::IsNullOrEmpty($AliasCandidate)) {
-      $Remaining = "$($Command)"
-      $CleanAlias = "$($AliasCandidate)" | Format-Command
-      $AttemptSplit = $CleanAlias -split " "
-  
-      $AttemptSplit | ForEach-Object {
-        [Regex]$Pattern = [Regex]::Escape("$_")
-        $Remaining = $Pattern.replace($Remaining, "", 1)
+    # TODO handle StringExpandableToken
+    else {
+      # When we finish the current token back-alias it
+      if ($queue.Count -gt 0) {
+        $alias = Find-AliasCommand $queue[-1]
+        $aliased += if ([string]::IsNullOrEmpty($alias)) { $queue[-1] } else { $alias }
       }
-  
-      if (-not $Remaining) {
-        $Alias = ($AliasTipsHashEvaluated[$AliasCandidate]) | Format-Command
+      # TODO: Whitespace preservation? Might require a custom Tokenizer
+      if ('AtCurly', 'AtParen', 'DollarParen', 'LBracket', 'LCurly', 'LParen' -contains $kind) {
+        $aliased += " $($token.Text)"
+      } elseif ('RBracket', 'RCurly', 'RParen' -contains $kind) {
+        $aliased += "$($token.Text) "
+      } else {
+        $aliased += " $($token.Text) "
       }
-      if ($AliasTipsHashEvaluated[$AliasCandidate + ' $args']) {
-        # TODO: Sometimes superflous args aren't at the end... Fix this.
-        $Alias = ($AliasTipsHashEvaluated[$AliasCandidate + ' $args'] + $Remaining) | Format-Command
-      }
-      if ($Alias -ne $Command) {
-        return $Alias
-      }
+
+      $queue += ""
     }
   }
+
+  $aliased.Trim()
 }
