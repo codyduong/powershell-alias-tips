@@ -4,7 +4,7 @@
 
 # Alias Tips
 
-*Alias-Tips* is a [PowerShell](https://microsoft.com/powershell) module dedicated to help remembering those shell aliases you once defined. Inspired by the [Oh My Zsh](https://github.com/robbyrussell/oh-my-zsh) plugin [alias-tips](https://github.com/djui/alias-tips)
+*alias-tips* is a [PowerShell](https://microsoft.com/powershell) module dedicated to help remembering those shell aliases you once defined. Inspired by the [Oh My Zsh](https://github.com/robbyrussell/oh-my-zsh) plugin [alias-tips](https://github.com/djui/alias-tips)
 
 The idea is that you might be too afraid to execute aliases defined because you can't remember them correctly, or just have forgotten about some aliases, or that aliases for your daily commands even exist.
 
@@ -12,7 +12,7 @@ The idea is that you might be too afraid to execute aliases defined because you 
 
 ![Gif Demonstration of Alias Tips](./media/demo.gif)
 
-###### Terminal is using [ `oh-my-posh` ](https://ohmyposh.dev/) with [ `M365Princess` ](https://ohmyposh.dev/docs/themes#m365princess) theme and [`git-aliases-plus`](https://github.com/codyduong/powershell-git-aliases-plus) for git aliases
+###### Terminal is using [ `oh-my-posh` ](https://ohmyposh.dev/) w/ [ `M365Princess` ](https://ohmyposh.dev/docs/themes#m365princess), [ `git-aliases-plus` ](https://github.com/codyduong/powershell-git-aliases-plus), [ `PSReadline` ](https://github.com/PowerShell/PSReadLine)
 
 ------------------
 
@@ -38,58 +38,61 @@ Alias tip: mv foo bar
 :
 ```
 
-View [Caveats](#caveats)
-
 ## Installation and Usage
 
-Install from PowerShell Gallery
+Install the module from the [PowerShell Gallery](https://www.powershellgallery.com/): 
 
 ```powershell
 Install-Module alias-tips -AllowClobber
 ```
 
-## Usage
-
 Inside your PowerShell profile
+
 ```powershell
 Import-Module alias-tips
 ```
 
-Everytime your aliases are updated run `Find-AliasTips`. This will store a hash of all aliases
-to default: `$HOME/.alias_tips.hash`. View [Configuration][#configuration] to 
+Everytime your aliases are updated run
 
-## Configuration
-*alias-tips* can be configured via Environment Variables
 ```powershell
-# Set the template message (Note the distinction between non virtual terminal and virtual terminal supported template strings
-$env:ALIASTIPS_MSG = "" # Default: "Alias tip: {0}"
-$env:ALIASTIPS_MSG_VT = "" # Default: "`e[033mAlias tip: {0}`e[m"
-
-# Set the alias hash location
-$env:ALIASTIPS_HASH_PATH = "" # Default: [System.IO.Path]::Combine("$HOME", '.alias_tips.hash')
-
-# Debug and other values
-$env:ALIASTIPS_DEBUG = "" # Default: $false
+Find-AliasTips
 ```
 
-## Caveats
+This will store a hash of all aliased commands to: `$HOME/.alias_tips.hash` . It is **not recommended** to run on every profile load, as this can significantly slow down your profile startup times.
 
-### Limited Aliasing Power
+## Configuration
 
-This tool will read all available aliases including custom aliases defined using the `function` syntax.
-However, it is limited and naive in it's approach.
+*alias-tips* can be configured via Environment Variables
 
-### Example Alias Tip Interactions
+| Environment Variable             | Default Value                                            | Description                                                                               |
+| :------------------------------- | :------------------------------------------------------- | :---------------------------------------------------------------------------------------- |
+| ALIASTIPS_DEBUG                  | `$false`                                                 | Enable to show debug messages when processing commands                                    |
+| ALIASTIPS_HASH_PATH              | `[System.IO.Path]::Combine("$HOME", '.alias_tips.hash')` | File Path to store results from `Find-AliasTips`                                          |
+| ALIASTIPS_MSG                    | `"Alias tip: {0}"`                                       | Alias hint message for non-virtual terminals                                              |
+| ALIASTIPS_MSG_VT                 | `"``e[033mAlias tip: {0}``e[m"`                          | Alias hint message for virtual terminals                                                  |
+| ALIASTIPS_FUNCTION_INTROSPECTION | `$false`                                                 | **POTENTIALLY DESTRUCTIVE** [Function Alias Introspection](#function-alias-introspection) |
 
-#### ✅ Simple Function Alias
+## How Does This Work
+
+It will attempt to read all functions/aliases set in the current context. 
+
+### Example Interactions
+
+#### Alias
+```powershell
+New-Alias -Name g -Value git
+```
+
+#### Simple Function Alias
+
 ```powershell
 function grbi {
 	git rebase -i $args
 }
 ```
-**NOTE**: Alias-tips right now has no way of knowing `-i` is equivalent to `--interactive`.
 
-#### ✅ Function Alias with simple variable assignment
+#### Function Alias Introspection
+
 ```powershell
 function gcm {
 	$MainBranch = Get-Git-MainBranch
@@ -97,32 +100,13 @@ function gcm {
 	git checkout $MainBranch $args
 }
 ```
-#### ❌ Function Alias with variables dependent on `$args`
-```powershell
-function someAlias {
-	$OtherArgs = $args | ForEach-Object {
-		$_.key
-	}
 
-	someCommand $OtherArgs
-}
-```
+This is potentially destructive behavior, as it requires running `Get-Git-MainBranch` (in this example)
+to attempt to parse `$MainBranch` and is disabled by default. It is also currently in a limited parsing stage.
+It does not attempt to parse line-by-line, instead performing a backwards search, and is naive in its
+implementation.
 
-#### ❌ Function Alias with complex variable assignment
-```powershell
-function someAlias {
-	$A = "foobar"
-	$B = $A + " $args"
-
-	someCommand $B
-}
-```
-**NOTE**: Complex in this manner referring to the multi-step assignment.
-
-### Overwrites `function PSConsoleHostReadLine`
-
-Be aware if you use `function PSConsoleHostReadLine` as part of another module or your PowerShell profile, 
-alias-tips will break it.
+Set `$env:ALIASTIPS_FUNCTION_INTROSPECTION` to `$true` to enable it
 
 ## License
 

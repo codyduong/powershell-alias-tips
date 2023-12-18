@@ -1,10 +1,13 @@
 function Format-Command {
   param(
-      [Parameter(Mandatory, Position = 0, ValueFromPipeline = $true)]
-      [string]${Command}
+    [Parameter(Position = 0, ValueFromPipeline = $true)][string]${Command}
   )
 
   process {
-      return ($Command -replace '`\r?\n', ' ' -replace '\s+', ' ').Trim()
+    if ([string]::IsNullOrEmpty($Command)) {
+      return $Command
+    }
+
+    return ($Command -replace '`\r?\n', ' ' -replace '\s+', ' ').Trim()
   }
 }

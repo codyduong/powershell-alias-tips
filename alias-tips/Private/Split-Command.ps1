@@ -1,26 +1,43 @@
-
 function Split-Command {
   param(
     [Parameter(Mandatory)][string]$Line
   )
 
-  if ($Line -match "(?<cmd>.*)(?<sep>;|(\|\|)|(\|)|(&&))(?<rest>.*)") {
-    Write-Verbose "Splitting line into $($matches['cmd']), $($matches['sep']), and $($matches['rest'])"
-    $LeftHalf = Find-Alias($matches['cmd'])
-    $RightHalf = Split-Command $($matches['rest'])
+  $tokens = @()
+  [void][System.Management.Automation.Language.Parser]::ParseInput($Line, [ref]$tokens, [ref]$null)
 
-    # If the left half isn't found restore the left half
-    if (-not $LeftHalf) { $LeftHalf = $matches['cmd'] | Format-Command }
-    # If the right half isn't found restore the right half
-    if (-not $RightHalf) { $RightHalf = $matches['rest'] | Format-Command }
+  $queue = [System.Collections.ArrayList]::new()
+  $aliased = ""
 
-    $CompleteAlias = $($LeftHalf + "$(If ($matches['sep'] -eq ';') {''} else {' '})$($matches['sep']) " + $RightHalf) | Format-Command
-    # only return the alias if it is different from the line
-    if ($CompleteAlias -ne $($Line | Format-Command)) {
-      return $CompleteAlias
+  foreach ($token in $tokens) {
+    $kind = $token.Kind
+    if ('Generic', 'StringLiteralToken', 'Generic', 'Identifier' -contains $kind) {
+      if ($queue.Count -gt 0) {
+        $queue[-1] = "$($queue[-1]) $($token.Text)"
+      }
+      else {
+        $queue += $token.Text
+      }
+    }
+    else {
+      # When we finish the current token back-alias it
+      if ($queue.Count -gt 0) {
+        $alias = Find-Alias $queue[-1]
+        Write-Warning $queue[-1]
+        $aliased += if ([string]::IsNullOrEmpty($alias)) { $token.Text } else { $alias }
+      }
+      # TODO: Whitespace preservation? Might require a custom tokenizer
+      if ('AtCurly', 'AtParen', 'DollarParen', 'LBracket', 'LCurly', 'LParen' -contains $kind) {
+        $aliased += " $($token.Text)"
+      } elseif ('RBracket', 'RCurly', 'RParen' -contains $kind) {
+        $aliased += "$($token.Text) "
+      } else {
+        $aliased += " $($token.Text) "
+      }
+
+      $queue += ""
     }
   }
-  else {
-    return Find-Alias($Line)
-  }
+
+  $aliased
 }

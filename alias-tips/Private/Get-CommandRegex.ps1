@@ -19,6 +19,10 @@ function Get-CommandRegex {
           # Clean up the command by removing extra delimiting whitespace and backtick preceding newlines
           $CommandString = ("$($matches['cmd'].TrimStart())") | Format-Command
 
+          if ([string]::IsNullOrEmpty($CommandString)) {
+            return ""
+          }
+
           $ReqParams = $($matches['params']) -split " "
           $ReqParamRegex = "(" + ($ReqParams.ForEach({
                   "$([Regex]::Escape($_.Trim()))(\s|``\r?\n)*"
