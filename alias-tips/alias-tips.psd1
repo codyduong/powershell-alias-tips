@@ -86,8 +86,8 @@ PrivateData = @{
         # Tags applied to this module. These help with module discovery in online galleries.
         Tags = @('alias', 'alias-hint', 'alias-tips', 'aliases')
 
-        # A URL to the license for this module.
-        LicenseUri = 'https://github.com/codyduong/powershell-alias-tips/blob/master/LICENSE.txt'
+        # The license for this module.
+        License = 'MIT'
 
         # A URL to the main website for this project.
         ProjectUri = 'https://github.com/codyduong/powershell-alias-tips'
