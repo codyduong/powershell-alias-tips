@@ -1,6 +1,6 @@
 function Format-Command {
   param(
-    [Parameter(Position = 0, ValueFromPipeline = $true)][string]${Command}
+    [Parameter(Position = 0, ValueFromPipeline = $true, Mandatory = $true)][string]${Command}
   )
 
   process {
@@ -8,6 +8,9 @@ function Format-Command {
       return $Command
     }
 
-    return ($Command -replace '`\r?\n', ' ' -replace '\s+', ' ').Trim()
+    $tokens = @()
+    [void][System.Management.Automation.Language.Parser]::ParseInput($Command, [ref]$tokens, [ref]$null)
+
+    return ($tokens.Text -join " " -replace '\s*\r?\n\s*', ' ').Trim()    
   }
 }

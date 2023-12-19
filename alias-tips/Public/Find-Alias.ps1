@@ -7,6 +7,13 @@ function Find-Alias {
   $tokens = @()
   $ast = [System.Management.Automation.Language.Parser]::ParseInput($Line, [ref]$tokens, [ref]$null)
 
+  $fastAlias = Find-AliasCommand ($tokens.Text -join " ")
+
+  if (-not [string]::IsNullOrEmpty($fastAlias)) {
+    Write-Verbose "Found alias without resorting to parsing"
+    return $fastAlias
+  }
+
   $queue = [System.Collections.ArrayList]::new()
   $extents = @(0, 0)
   $offset = 0
@@ -14,11 +21,11 @@ function Find-Alias {
 
   foreach ($token in $tokens) {
     $kind = $token.Kind
-    # Write-Host ($kind, "'$($token.Text)'" , $token.Extent.StartOffset, $token.Extent.StartColumnNumber)
-    if ('Generic', 'Identifier', 'HereStringLiteral', 'StringLiteral' -contains $kind) {
+    # Write-Host ($kind, "'$($token.Text)'" , $token.Extent.StartOffset, $token.Extent.EndOffset)
+    if ('Generic', 'Identifier', 'HereStringLiteral', 'Parameter', 'StringLiteral' -contains $kind) {
       if ($queue.Count -eq 0) {
         $queue += $token.Text
-        $extents = @(($token.Extent.StartColumnNumber - 1), $token.Extent.EndOffset)
+        $extents = @($token.Extent.StartOffset, $token.Extent.EndOffset)
       }
       else {
         $queue[-1] = "$($queue[-1]) $($token.Text)"
@@ -51,11 +58,11 @@ function Find-Alias {
         $nextents = @(0, 0)
         foreach ($ntoken in $ntokens) {
           $nkind = $ntoken.Kind
-          # Write-Host ("`t", $nkind, "'$($ntoken.Text)'" , $ntoken.Extent.StartOffset, $ntoken.Extent.StartColumnNumber, $ntoken.Extent.EndOffset, $ntoken.Extent.EndColumnNumber)
-          if ('Generic', 'Identifier', 'HereStringLiteral', 'StringLiteral' -contains $nkind) {
+          # Write-Host ("`t", $nkind, "'$($ntoken.Text)'" , $ntoken.Extent.StartOffset, $ntoken.Extent.Endoffset)
+          if ('Generic', 'Identifier', 'HereStringLiteral', 'Parameter', 'StringLiteral' -contains $nkind) {
             if ($nqueue.Count -eq 0) {
               $nqueue += $ntoken.Text
-              $nextents = @(($ntoken.Extent.StartColumnNumber - 1), $ntoken.Extent.EndOffset)
+              $nextents = @($ntoken.Extent.StartOffset, $ntoken.Extent.EndOffset)
             }
             else {
               $nqueue[-1] = "$($nqueue[-1]) $($ntoken.Text)"

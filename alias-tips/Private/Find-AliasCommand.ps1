@@ -1,7 +1,7 @@
 # Attempts to find an alias for a singular command
 function Find-AliasCommand {
   param(
-    [Parameter(ValueFromPipeline=$true)]
+    [Parameter(ValueFromPipeline = $true)]
     [string]$Command
   )
 
