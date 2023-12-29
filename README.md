@@ -69,7 +69,7 @@ This will store a hash of all aliased commands to: `$HOME/.alias_tips.hash` . It
 | ALIASTIPS_DEBUG                  | `$false`                                                 | Enable to show debug messages when processing commands                                    |
 | ALIASTIPS_HASH_PATH              | `[System.IO.Path]::Combine("$HOME", '.alias_tips.hash')` | File Path to store results from `Find-AliasTips`                                          |
 | ALIASTIPS_MSG                    | `"Alias tip: {0}"`                                       | Alias hint message for non-virtual terminals                                              |
-| ALIASTIPS_MSG_VT                 | `"``e[033mAlias tip: {0}``e[m"`                          | Alias hint message for virtual terminals                                                  |
+| ALIASTIPS_MSG_VT                 | `` `e[033mAlias tip: {0}`em" ``                          | Alias hint message for virtual terminals                                                  |
 | ALIASTIPS_FUNCTION_INTROSPECTION | `$false`                                                 | **POTENTIALLY DESTRUCTIVE** [Function Alias Introspection](#function-alias-introspection) |
 
 ## How Does This Work
