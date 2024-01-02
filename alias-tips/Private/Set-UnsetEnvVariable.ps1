@@ -1,4 +1,5 @@
 function Set-UnsetEnvVariable {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param (
     [string]$VariableName,
     [string]$Value
@@ -7,6 +8,8 @@ function Set-UnsetEnvVariable {
   # Check if the environment variable is already set
   if (-not [System.Environment]::GetEnvironmentVariable($VariableName)) {
     # Set the environment variable
-    [System.Environment]::SetEnvironmentVariable($VariableName, $Value)
+    if($PSCmdlet.ShouldProcess($VariableName)){
+      [System.Environment]::SetEnvironmentVariable($VariableName, $Value)
+    }
   }
 }

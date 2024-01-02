@@ -4,9 +4,13 @@ $global:AliasTipsOriginalPSConsoleHostReadLine = $function:PSConsoleHostReadLine
 function PSConsoleHostReadLine {
   ## Get the execution status of the last accepted user input.
   ## This needs to be done as the first thing because any script run will flush $?.
-  $lastRunStatus = $? 
+  $lastRunStatus = $?
 
   ($Line = [Microsoft.PowerShell.PSConsoleReadLine]::ReadLine($host.Runspace, $ExecutionContext, $lastRunStatus))
+
+  if ([System.Environment]::GetEnvironmentVariable("ALIASTIPS_DISABLE") -eq [string]$true) {
+    return
+  }
 
   # split line into multiple commands if possible
   $alias = Find-Alias $Line

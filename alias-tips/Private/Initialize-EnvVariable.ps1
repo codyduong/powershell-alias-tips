@@ -1,7 +1,7 @@
 function Initialize-EnvVariable {
   param (
-    [string]$VariableName,
-    [string]$DefaultValue
+    [Parameter(Mandatory = $true, Position = 0)][string]$VariableName,
+    [Parameter(Position = 1)][string]$DefaultValue
   )
 
   $Var = Get-EnvVariable $VariableName

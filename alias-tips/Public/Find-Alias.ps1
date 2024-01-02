@@ -44,7 +44,7 @@ function Find-Alias {
           $offset -= $saved
         }
       }
-      
+
       # Reset the queue
       $queue = [System.Collections.ArrayList]::new()
       $extents = @(0, 0)

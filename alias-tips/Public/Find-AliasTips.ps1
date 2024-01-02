@@ -1,5 +1,5 @@
 function Find-AliasTips {
-  $global:AliasTipsProxyFunctionRegex, $global:AliasTipsProxyFunctionRegexNoArgs = Get-CommandsRegex | Get-ProxyFunctionRegexes 
+  $global:AliasTipsProxyFunctionRegex, $global:AliasTipsProxyFunctionRegexNoArgs = Get-CommandsRegex | Get-ProxyFunctionRegexes
 
   $AliasTipsHash = Get-Aliases
   $Value = $($AliasTipsHash.GetEnumerator() | ForEach-Object {
