@@ -73,11 +73,12 @@ param(
     [Parameter()][switch]$Publish
 )
 
-$Path = if ([string]::IsNullOrEmpty($Path)) { '.\alias-tips' } else { $Path }
+$Version = $(Import-PowerShellDataFile (Join-Path $PSScriptRoot "..\alias-tips\alias-tips.psd1")).ModuleVersion
+$Path = if ([string]::IsNullOrEmpty($Path)) { Join-Path $PSScriptRoot "..\Output\alias-tips\$Version" } else { $Path }
 $NuGetApiKey = if ([string]::IsNullOrEmpty($NuGetApiKey)) { "$(Get-Content -Path .env)" -replace ".*=" } else { $NuGetApiKey }
-$PSBoundParameters.Remove('Publish')
-
-Remove-Item $Path -Include ** -Recurse -ErrorAction SilentlyContinue
-New-Item -Path $Path -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
-Copy-Item src/** -Destination $Path -Include **
+[void]$PSBoundParameters.Remove('Publish')
+# Remove-Item $Path -Include ** -Recurse -ErrorAction SilentlyContinue
+# New-Item -Path $Path -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
+# Copy-Item src/** -Destination $Path -Include **
+Remove-Item (Join-Path $Path ".\en-US") -Include ** -Recurse -ErrorAction SilentlyContinue
 Publish-Module -Path $Path -NuGetApiKey $NuGetApiKey -Verbose -WhatIf:$(-not $Publish) @PSBoundParameters

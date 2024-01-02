@@ -4,7 +4,7 @@
 RootModule = 'alias-tips.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.3.0'
+ModuleVersion = '1.0.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -58,11 +58,7 @@ Description = 'Provides alias tips for commands. Help remembering those shell al
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = @(
-    'PSConsoleHostReadLine',
-    'Find-AliasTips',
-    'Start-FindAliasTips'
-)
+FunctionsToExport = @()
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
@@ -90,8 +86,8 @@ PrivateData = @{
         # Tags applied to this module. These help with module discovery in online galleries.
         Tags = @('alias', 'alias-hint', 'alias-tips', 'aliases')
 
-        # A URL to the license for this module.
-        LicenseUri = 'https://github.com/codyduong/powershell-alias-tips/blob/master/LICENSE.txt'
+        # The license for this module.
+        License = 'MIT'
 
         # A URL to the main website for this project.
         ProjectUri = 'https://github.com/codyduong/powershell-alias-tips'
@@ -100,7 +96,7 @@ PrivateData = @{
         ReleaseNotes = 'https://github.com/codyduong/powershell-alias-tips/releases'
 
         # Prerelease version
-        # Prerelease = "rc1"
+        # Prerelease = "rc2"
     } # End of PSData hashtable
 
 } # End of PrivateData hashtable
