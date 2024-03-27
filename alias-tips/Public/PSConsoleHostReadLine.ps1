@@ -15,7 +15,7 @@ function PSConsoleHostReadLine {
   # split line into multiple commands if possible
   $alias = Find-Alias $Line
 
-  if (-not [string]::IsNullOrEmpty($alias) -and $alias -ne $Line) {
+  if (-not [string]::IsNullOrEmpty($alias) -and $alias -ne $Line.Trim()) {
     $tip = (Initialize-EnvVariable "ALIASTIPS_MSG" "Alias tip: {0}") -f $alias
     $vtTip = (Initialize-EnvVariable "ALIASTIPS_MSG_VT" "`e[033mAlias tip: {0}`e[m") -f $alias
     if ($tip -eq "") {
