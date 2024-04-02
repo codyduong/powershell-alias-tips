@@ -1,5 +1,5 @@
 # Store the original PSConsoleHostReadLine function when importing the module
-$global:AliasTipsOriginalPSConsoleHostReadLine = $function:PSConsoleHostReadLine
+$global:AliasTipsOriginalPSConsoleHostReadLine = Get-Item Function:\PSConsoleHostReadLine -ErrorAction SilentlyContinue
 
 function PSConsoleHostReadLine {
   ## Get the execution status of the last accepted user input.
@@ -28,6 +28,28 @@ function PSConsoleHostReadLine {
   }
 }
 
-Register-EngineEvent -SourceIdentifier ([System.Management.Automation.PsEngineEvent]::Exiting) -Action {
-  $function:PSConsoleHostReadLine = $global:AliasTipsOriginalPSConsoleHostReadLine
+$DEFAULT_PSConsoleHostReadLine = {
+  [System.Diagnostics.DebuggerHidden()]
+  param()
+
+  ## Get the execution status of the last accepted user input.
+  ## This needs to be done as the first thing because any script run will flush $?.
+  $lastRunStatus = $?
+  Microsoft.PowerShell.Core\Set-StrictMode -Off
+  [Microsoft.PowerShell.PSConsoleReadLine]::ReadLine($host.Runspace, $ExecutionContext, $lastRunStatus)
+}
+
+$MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = {
+  if ($null -eq $global:AliasTipsOriginalPSConsoleHostReadLine) {
+    $global:AliasTipsOriginalPSConsoleHostReadLine = $DEFAULT_PSConsoleHostReadLine
+  }
+  $toFixStr = "Set-Item Function:\PSConsoleHostReadLine -Value `$AliasTipsOriginalPSConsoleHostReadLine"
+  @"
+`e[1;31mRemoved module alias-tips!`e[m `e[36mTo restore your PSReadline, run:`e[m
+$toFixStr
+`e[36mIt has been copied into your clipboard for your convenience`e[m
+"@ | Out-Host
+  Set-Clipboard -Value $toFixStr
+  # TODO is there a way to restore this automagically??
+  Set-Item Function:\PSConsoleHostReadLine -Value $AliasTipsOriginalPSConsoleHostReadLine -Force
 }
