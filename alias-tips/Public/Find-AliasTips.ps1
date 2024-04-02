@@ -6,5 +6,6 @@ function Find-AliasTips {
         "$($_.Key -replace "\\", "\\")|$($_.Value -replace "\\", "\\")"
       }
     })
+
   Set-Content -Path $AliasTipsHashFile -Value $Value
 }

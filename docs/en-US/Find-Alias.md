@@ -8,7 +8,7 @@ schema: 2.0.0
 # Find-Alias
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Finds an alias for a command string.
 
 ## SYNTAX
 
@@ -17,21 +17,27 @@ Find-Alias [-Line] <String> [-ProgressAction <ActionPreference>] [<CommonParamet
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Finds an alias for a command string.
+Returns the original line if no aliases are found.
 
 ## EXAMPLES
 
-### Example 1
-```powershell
-PS C:\> {{ Add example code here }}
+### EXAMPLE 1
+```
+Find-Alias "git checkout master"
+Outputs the alias for 'git checkout master', if it exists. Otherwise it returns the original string.
 ```
 
-{{ Add example description here }}
+### EXAMPLE 2
+```
+"git status" | Find-Alias
+Outputs the alias for 'git status', if it exists. Otherwise it returns the original string.
+```
 
 ## PARAMETERS
 
 ### -Line
-{{ Fill Line Description }}
+Specifies the line to find an alias for.
 
 ```yaml
 Type: String
@@ -65,11 +71,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### None
-
+### [System.String](https://docs.microsoft.com/en-us/dotnet/api/system.string)
 ## OUTPUTS
 
-### System.Object
+### [System.String](https://docs.microsoft.com/en-us/dotnet/api/system.string)
 ## NOTES
 
 ## RELATED LINKS

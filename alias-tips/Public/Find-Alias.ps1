@@ -12,19 +12,23 @@ function Find-Alias {
 
   Specifies the line to find an alias for.
 
+  .INPUTS
+
+  [System.String](https://docs.microsoft.com/en-us/dotnet/api/system.string)
+
   .OUTPUTS
 
-  System.String. Find-Alias will return an alias or the original line if none are found.
+  [System.String](https://docs.microsoft.com/en-us/dotnet/api/system.string)
 
   .EXAMPLE
 
   PS> Find-Alias "git checkout master"
-  gcm
+  Outputs the alias for 'git checkout master', if it exists. Otherwise it returns the original string.
 
   .EXAMPLE
 
-  PS> Find-Alias -Line "git status"
-  gst
+  PS> "git status" | Find-Alias
+  Outputs the alias for 'git status', if it exists. Otherwise it returns the original string.
 
   #>
   param(
@@ -42,10 +46,11 @@ function Find-Alias {
 
     $fastAlias = Find-AliasCommand ($tokens.Text -join " ")
 
-    if (-not [string]::IsNullOrEmpty($fastAlias)) {
-      Write-Verbose "Found alias without resorting to parsing"
-      return $fastAlias
-    }
+    # fastAlias is not appreciably faster but is definetly less stable, disable for now?
+    # if (-not [string]::IsNullOrEmpty($fastAlias)) {
+    #   Write-Verbose "Found alias without resorting to parsing"
+    #   return $fastAlias
+    # }
 
     $queue = [System.Collections.ArrayList]::new()
     $extents = @(0, 0)
@@ -68,7 +73,6 @@ function Find-Alias {
       else {
         # When we finish the current token back-alias it
         if ($queue.Count -gt 0) {
-          Write-Verbose "fuck $($queue[-1])"
           $alias = Find-AliasCommand $queue[-1]
           if (-not [string]::IsNullOrEmpty($alias)) {
             $saved = $queue[-1].Length - $alias.Length

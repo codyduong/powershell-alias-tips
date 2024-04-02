@@ -1,6 +1,6 @@
 ---
 external help file: alias-tips-help.xml
-Module Name: Alias-Tips
+Module Name: alias-tips
 online version:
 schema: 2.0.0
 ---
