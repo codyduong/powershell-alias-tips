@@ -3,17 +3,16 @@ function Find-RegexThreadJob {
     return
   }
 
-  $existingJob = Get-Job -Name "FindAliasTipsJob" -State Running -ErrorAction SilentlyContinue
+  $existingJob = Get-Job -Name "FindAliasTipsJob"
   if ($null -ne $existingJob) {
-    Wait-Job -Job $existingJob
+    $existingJob = Wait-Job -Job $existingJob
   }
   else {
     $job = Start-RegexThreadJob
 
-    Wait-Job -Job $job
+    $existingJob = Wait-Job -Job $job
   }
-  
-  $result = Receive-Job -Name "FindAliasTipsJob" -Wait -AutoRemoveJob
+  $result = Receive-Job -Job $existingJob -Wait -AutoRemoveJob
 
   $global:AliasTipsProxyFunctionRegex, $global:AliasTipsProxyFunctionRegexNoArgs = $result
 }

@@ -1,4 +1,9 @@
 function Start-RegexThreadJob {
+  $existingJob = Get-Job -Name "FindAliasTipsJob" -ErrorAction SilentlyContinue | Select-Object -Last 1
+  if ($null -ne $existingJob) {
+    $existingJob = Wait-Job -Job $existingJob
+  }
+
   return Start-ThreadJob -Name "FindAliasTipsJob" -ScriptBlock {
     function Get-CommandsRegex {
       (Get-Command * | ForEach-Object {

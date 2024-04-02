@@ -18,5 +18,5 @@ using namespace System.Collections.ObjectModel
 }
 
 task default -depends Test
-
+# task Build -FromModule PowerShellBuild -Version '0.6.1' -depends @('StageFiles')
 task Pester -FromModule PowerShellBuild -Version '0.6.1' -preaction { Remove-Module alias-tips -ErrorAction SilentlyContinue }

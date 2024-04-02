@@ -48,7 +48,7 @@ if ($Bootstrap.IsPresent) {
 # Execute psake task(s)
 $psakeFile = Join-Path $PSScriptRoot '../psakeFile.ps1'
 if ($Help.IsPresent) {
-  Get-PSakeScriptTasks -buildFile $psakeFile  |
+  Get-PSakeScriptTasks -buildFile $psakeFile |
   Format-Table -Property Name, Description, Alias, DependsOn
 }
 else {

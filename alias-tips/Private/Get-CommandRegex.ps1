@@ -8,14 +8,13 @@ function Get-CommandRegex {
 
   process {
     # The parse is a bit naive...
-    if ($Command -match $AliasTipsProxyFunctionRegexNoArgs) {
+    if ($Command -match $global:AliasTipsProxyFunctionRegexNoArgs) {
       # Clean up the command by removing extra delimiting whitespace and backtick preceding newlines
-      $CommandString = ("$($matches['cmd'].TrimStart())")
+      $CommandString = ("$($matches['cmd'].TrimStart())") | Format-Command
 
       if ([string]::IsNullOrEmpty($CommandString)) {
         return ""
       }
-      $CommandString = $CommandString | Format-Command
 
       $ReqParams = $($matches['params']) -split " "
       $ReqParamRegex = "(" + ($ReqParams.ForEach({
