@@ -3,26 +3,19 @@ function Get-CommandRegex {
   [OutputType([System.String])]
   param (
     [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
-    [string]${Command},
-
-    [Parameter()]
-    [switch]${Simple}
+    [string]${Command}
   )
 
   process {
-    if ($Simple) {
-      $CleanCommand = $Command | Format-Command
-      return "(" + ([Regex]::Escape($CleanCommand) -split " " -join "|") + ")"
-    }
-
     # The parse is a bit naive...
     if ($Command -match $AliasTipsProxyFunctionRegexNoArgs) {
       # Clean up the command by removing extra delimiting whitespace and backtick preceding newlines
-      $CommandString = ("$($matches['cmd'].TrimStart())") | Format-Command
+      $CommandString = ("$($matches['cmd'].TrimStart())")
 
       if ([string]::IsNullOrEmpty($CommandString)) {
         return ""
       }
+      $CommandString = $CommandString | Format-Command
 
       $ReqParams = $($matches['params']) -split " "
       $ReqParamRegex = "(" + ($ReqParams.ForEach({

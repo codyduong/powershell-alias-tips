@@ -1,6 +1,7 @@
 # Return a hashtable of possible aliases
 function Get-Aliases {
   $Hash = @{}
+  Find-RegexThreadJob
 
   # generate aliases for commands aliases created via native PowerShell functions
   $proxyAliases = Get-Item -Path Function:\

@@ -1,8 +1,19 @@
+function script:Format-Token {
+  param(
+
+  )
+}
+
 # Attempts to find an alias for a command string (ie. can consist of chained or nested aliases)
 function Find-Alias {
   param(
-    [Parameter(Mandatory)][string]$Line
+    [Parameter(Mandatory, ValueFromPipeline = $true)]
+    [string]$Line
   )
+
+  if ($AliasTipsHash -and $AliasTipsHash.Count -eq 0) {
+    $AliasTipsHash = ConvertFrom-StringData -StringData $([System.IO.File]::ReadAllText($AliasTipsHashFile)) -Delimiter "|"
+  }
 
   $tokens = @()
   $ast = [System.Management.Automation.Language.Parser]::ParseInput($Line, [ref]$tokens, [ref]$null)

@@ -20,6 +20,10 @@ function Find-AliasCommand {
     # TODO check if it is an alias, expand it back out to check if there is a better alias
 
     # We failed to find the alias in the hash, instead get the executed command, and attempt to generate a regex for it.
+  
+    # First we need to ensure we have generated required regexes
+    Find-RegexThreadJob
+    # Generate a regex that searches through our alias hash, and checks if it matches as an alias for our command
     $Regex = Get-CommandRegex $Command
     if ([string]::IsNullOrEmpty($Regex)) {
       return ""
