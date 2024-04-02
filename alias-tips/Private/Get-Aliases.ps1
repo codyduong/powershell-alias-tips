@@ -12,12 +12,30 @@ function Get-Aliases {
     # validate there is a command
     if ($ProxyDef -match $AliasTipsProxyFunctionRegex) {
       $CleanedCommand = ("$($matches['cmd'].TrimStart()) $($matches['params'])") | Format-Command
+      
       if ($ProxyDef -match '\$args') {
-        $Hash[$CleanedCommand + ' $args'] = $ProxyName
+        # Use the shorter of two if we already have hashed this command
+        if ($Hash.ContainsKey($CleanedCommand + ' $args')) {
+          if ($ProxyName.Length -lt $Hash[$CleanedCommand + ' $args'].Length) {
+            $Hash[$CleanedCommand + ' $args'] = $ProxyName
+          }
+        }
+        else {
+          $Hash[$CleanedCommand + ' $args'] = $ProxyName
+        }
+        
       }
 
       # quick alias
-      $Hash[$CleanedCommand] = $ProxyName
+      # use the shorter of two if we already have hashed this command
+      if ($Hash.ContainsKey($CleanedCommand)) {
+        if ($ProxyName.Length -lt $Hash[$CleanedCommand].Length) {
+          $Hash[$CleanedCommand] = $ProxyName
+        }
+      }
+      else {
+        $Hash[$CleanedCommand] = $ProxyName
+      }
     }
   }
 

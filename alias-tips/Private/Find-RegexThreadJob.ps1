@@ -3,7 +3,7 @@ function Find-RegexThreadJob {
     return
   }
 
-  $existingJob = Get-Job -Name "FindAliasTipsJob"
+  $existingJob = Get-Job -Name "FindAliasTipsJob" -ErrorAction SilentlyContinue | Select-Object -Last 1
   if ($null -ne $existingJob) {
     $existingJob = Wait-Job -Job $existingJob
   }
