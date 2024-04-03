@@ -96,7 +96,7 @@ PrivateData = @{
         ReleaseNotes = 'https://github.com/codyduong/powershell-alias-tips/releases'
 
         # Prerelease version
-        # Prerelease = "rc2"
+        Prerelease = "rc1"
     } # End of PSData hashtable
 
 } # End of PrivateData hashtable
