@@ -1,7 +1,7 @@
 # Attempts to find an alias for a singular command
 function Find-AliasCommand {
   param(
-    [Parameter(ValueFromPipeline = $true)]
+    [Parameter(Mandatory, ValueFromPipeline = $true)]
     [string]$Command
   )
 
@@ -14,9 +14,9 @@ function Find-AliasCommand {
   process {
     # If we can find the alias quickly, do so
     $Alias = $AliasTipsHash[$Command.Trim()]
-    if ($Alias) {
+    if (-not [string]::IsNullOrEmpty($Alias)) {
       Write-Verbose "Quickly found alias inside of AliasTipsHash"
-      return $Alias
+      return $Alias | Format-Command
     }
 
     # TODO check if it is an alias, expand it back out to check if there is a better alias
