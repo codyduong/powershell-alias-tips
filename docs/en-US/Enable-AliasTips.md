@@ -8,38 +8,32 @@ schema: 2.0.0
 # Enable-AliasTips
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Enables alias-tips
 
 ## SYNTAX
 
 ```
-Enable-AliasTips [<CommonParameters>]
+Enable-AliasTips
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Enables alias-tips by setting $env:ALIASTIPS_DISABLE to $false
 
 ## EXAMPLES
 
-### Example 1
-```powershell
-PS C:\> {{ Add example code here }}
+### EXAMPLE 1
 ```
-
-{{ Add example description here }}
+Enable-AliasTips
+```
 
 ## PARAMETERS
 
-### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
-
 ## INPUTS
 
-### None
-
+### None. This function does not accept any input.
 ## OUTPUTS
 
-### System.Object
+### None. This function does not accept any input.
 ## NOTES
 
 ## RELATED LINKS

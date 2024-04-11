@@ -23,12 +23,10 @@ function Find-Alias {
   .EXAMPLE
 
   PS> Find-Alias "git checkout master"
-  Outputs the alias for 'git checkout master', if it exists. Otherwise it returns the original string.
 
   .EXAMPLE
 
   PS> "git status" | Find-Alias
-  Outputs the alias for 'git status', if it exists. Otherwise it returns the original string.
 
   #>
   param(
