@@ -8,38 +8,35 @@ schema: 2.0.0
 # Find-AliasTips
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Finds alias-tips for the current shell context.
 
 ## SYNTAX
 
 ```
-Find-AliasTips [<CommonParameters>]
+Find-AliasTips
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Finds alias-tips for the current shell context.
+This command should be run everytime aliases 
+are updated or changed.
+It caches the expensive operation to a pipe delimited file in the 
+`$env:AliasTipsHashFile` location.
+By default this location is at `$HOME/.alias_tips.hash`.
 
 ## EXAMPLES
 
-### Example 1
-```powershell
-PS C:\> {{ Add example code here }}
+### EXAMPLE 1
 ```
-
-{{ Add example description here }}
+Find-AliasTips
+```
 
 ## PARAMETERS
 
-### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
-
 ## INPUTS
-
-### None
 
 ## OUTPUTS
 
-### System.Object
 ## NOTES
 
 ## RELATED LINKS

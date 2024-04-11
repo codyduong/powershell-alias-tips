@@ -25,13 +25,11 @@ Returns the original line if no aliases are found.
 ### EXAMPLE 1
 ```
 Find-Alias "git checkout master"
-Outputs the alias for 'git checkout master', if it exists. Otherwise it returns the original string.
 ```
 
 ### EXAMPLE 2
 ```
 "git status" | Find-Alias
-Outputs the alias for 'git status', if it exists. Otherwise it returns the original string.
 ```
 
 ## PARAMETERS
