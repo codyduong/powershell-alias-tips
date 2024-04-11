@@ -53,15 +53,21 @@ Import-Module alias-tips
 ```
 
 > [!IMPORTANT]
-> alias-tips should be imported after all aliases declared
+> alias-tips should be imported after all your aliases are already declared or imported
 
-Everytime your aliases are updated run
+Everytime your aliases are updated or changed run [`Find-AliasTips`](./docs/en-US/Find-AliasTips.md)
 
 ```powershell
 Find-AliasTips
 ```
 
 This will store a hash of all aliased commands to: `$HOME/.alias_tips.hash` . It is **not recommended** to run on every profile load, as this can significantly slow down your profile startup times.
+
+Other functionality:
+- [Disable-AliasTips](./docs/en-US/Disable-AliasTips.md)
+- [Enable-AliasTips](./docs/en-US/Enable-AliasTips.md)
+- [Find-Alias](./docs/en-US/Find-Alias.md)
+- [Find-AliasTips](./docs/en-US/Find-AliasTips.md)
 
 ## Configuration
 
@@ -78,7 +84,7 @@ This will store a hash of all aliased commands to: `$HOME/.alias_tips.hash` . It
 \* This uses [ANSI Escape Codes](https://en.wikipedia.org/wiki/ANSI_escape_code), for a [table of colors](https://en.wikipedia.org/wiki/ANSI_escape_code#Colors). 
 This also means alias-tips supports any other virtual terminal features: blinking/bold/underline/italics.
 
-## How Does This Work
+## How It Works
 
 It will attempt to read all functions/aliases set in the current context. 
 
