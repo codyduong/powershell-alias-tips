@@ -44,14 +44,6 @@ function Find-Alias {
     $tokens = @()
     $ast = [System.Management.Automation.Language.Parser]::ParseInput($Line, [ref]$tokens, [ref]$null)
 
-    $fastAlias = Find-AliasCommand ($tokens.Text -join " ")
-
-    # fastAlias is not appreciably faster but is definetly less stable, disable for now?
-    # if (-not [string]::IsNullOrEmpty($fastAlias)) {
-    #   Write-Verbose "Found alias without resorting to parsing"
-    #   return $fastAlias
-    # }
-
     $queue = [System.Collections.ArrayList]::new()
     $extents = @(0, 0)
     $offset = 0
