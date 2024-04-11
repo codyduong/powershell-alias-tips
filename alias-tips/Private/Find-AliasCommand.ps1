@@ -57,14 +57,14 @@ function Find-AliasCommand {
     Clear-AliasTipsInternalASTResults
 
     # Sort by which alias removes the most, then if they both shorten by same amount, choose the shorter alias
-    $Aliases = @(@($Aliases 
+    $Aliases = @(@($Aliases
       | Where-Object { $null -ne $_[0] -and $null -ne $_[1] })
       | Sort-Object -Property @{Expression = { - ($_[0]).Length } }, @{Expression = { ($_[1]).Length} })
     # foreach ($pair in $Aliases) {
     #   Write-Host "($($pair[0]), $($pair[1]))"
     # }
-    # Use the longest candiate, if tied use shorter alias 
-    # -- TODO? this is my opinionated way since it results in most coverage (one long alias is better than two combined shorter aliases), 
+    # Use the longest candiate, if tied use shorter alias
+    # -- TODO? this is my opinionated way since it results in most coverage (one long alias is better than two combined shorter aliases),
     $AliasCandidate = ($Aliases)[0][0]
     Write-Verbose "Alias Candidate Chosen: $AliasCandidate"
     $Alias = ""
