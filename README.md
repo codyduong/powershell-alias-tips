@@ -46,11 +46,14 @@ Install the module from the [PowerShell Gallery](https://www.powershellgallery.c
 Install-Module alias-tips -AllowClobber
 ```
 
-Inside your PowerShell profile
+Inside your PowerShell profile, import alias-tips.
 
 ```powershell
 Import-Module alias-tips
 ```
+
+> [!IMPORTANT]
+> alias-tips should be imported after all aliases declared
 
 Everytime your aliases are updated run
 
@@ -69,14 +72,17 @@ This will store a hash of all aliased commands to: `$HOME/.alias_tips.hash` . It
 | ALIASTIPS_DEBUG                  | `$false`                                                 | Enable to show debug messages when processing commands                                    |
 | ALIASTIPS_HASH_PATH              | `[System.IO.Path]::Combine("$HOME", '.alias_tips.hash')` | File Path to store results from `Find-AliasTips`                                          |
 | ALIASTIPS_MSG                    | `"Alias tip: {0}"`                                       | Alias hint message for non-virtual terminals                                              |
-| ALIASTIPS_MSG_VT                 | `` `e[033mAlias tip: {0}`em" ``                          | Alias hint message for virtual terminals                                                  |
+| ALIASTIPS_MSG_VT                 | `` `e[033mAlias tip: {0}`em" ``                          | Alias hint message for virtual terminals*                                                 |
 | ALIASTIPS_FUNCTION_INTROSPECTION | `$false`                                                 | **POTENTIALLY DESTRUCTIVE** [Function Alias Introspection](#function-alias-introspection) |
+
+\* This uses [ANSI Escape Codes](https://en.wikipedia.org/wiki/ANSI_escape_code), for a [table of colors](https://en.wikipedia.org/wiki/ANSI_escape_code#Colors). 
+This also means alias-tips supports any other virtual terminal features: blinking/bold/underline/italics.
 
 ## How Does This Work
 
 It will attempt to read all functions/aliases set in the current context. 
 
-### Example Interactions
+### Example Interactions/Limitations
 
 #### Alias
 ```powershell
@@ -90,6 +96,8 @@ function grbi {
 	git rebase -i $args
 }
 ```
+> [!NOTE]
+> This has a limitation in that alias-tips does not know in this case that -i is equivalent to the --interactive flag.
 
 #### Function Alias Introspection
 
@@ -101,12 +109,15 @@ function gcm {
 }
 ```
 
-This is potentially destructive behavior, as it requires running `Get-Git-MainBranch` (in this example)
-to attempt to parse `$MainBranch` and is disabled by default. It is also currently in a limited parsing stage.
-It does not attempt to parse line-by-line, instead performing a backwards search, and is naive in its
-implementation.
+> [!WARNING]
+> This is potentially destructive behavior
 
-Set `$env:ALIASTIPS_FUNCTION_INTROSPECTION` to `$true` to enable it
+This requires backparsing as it requires running `Get-Git-MainBranch` (in this example) to get the value of `$MainBranch`.
+This backparsing **could be** a destructive command is not known to alias-tips, and it will run anyways. (ie. rm, git add, etc.)
+
+As a result this behavior is disabled by default.
+
+Set `$env:ALIASTIPS_FUNCTION_INTROSPECTION` to `$true` to enable it.
 
 ## License
 
