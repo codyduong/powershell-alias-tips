@@ -69,7 +69,7 @@ InModuleScope 'alias-tips' {
     Remove-Item alias:as_s -ErrorAction SilentlyContinue
     Remove-Item alias:as_f -ErrorAction SilentlyContinue
     Remove-Item alias:as_f_long -ErrorAction SilentlyContinue
-    
+
     Remove-Variable -Scope global -Name "AliasTipsHash" -ErrorAction SilentlyContinue
     Remove-Variable -Scope global -Name "AliasTipsProxyFunctionRegex" -ErrorAction SilentlyContinue
     Remove-Variable -Scope global -Name "AliasTipsProxyFunctionRegexNoArgs" -ErrorAction SilentlyContinue
