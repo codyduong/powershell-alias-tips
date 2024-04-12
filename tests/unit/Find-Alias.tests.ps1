@@ -9,7 +9,6 @@ InModuleScope 'alias-tips' {
     Set-Alias -Name 'as_s' -Value 'as_s_test'
 
     # This might cause a problem if you already aliased Out-Null
-
     function as_f {
       Out-Null $args
     }
@@ -66,14 +65,13 @@ InModuleScope 'alias-tips' {
 
     Remove-Item Env:\PESTER -ErrorAction SilentlyContinue
     Remove-Item alias:as_s -ErrorAction SilentlyContinue
+    Remove-Item function:as_base -ErrorAction SilentlyContinue
     Remove-Item function:as_f -ErrorAction SilentlyContinue
     Remove-Item function:as_f_long -ErrorAction SilentlyContinue
 
-    Find-AliasTips
-
     Get-Job -Name "FindAliasTipsJob" -ErrorAction SilentlyContinue | Stop-Job -PassThru | Remove-Job
 
-    # Find-AliasTips
+    Find-AliasTips
   }
 }
 }
