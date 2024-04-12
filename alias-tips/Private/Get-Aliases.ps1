@@ -10,9 +10,9 @@ function Get-Aliases {
     $ProxyName = $f | Select-Object -ExpandProperty 'Name'
     $ProxyDef = $f | Select-Object -ExpandProperty 'Definition'
     # validate there is a command
-    if ($ProxyDef -match $AliasTipsProxyFunctionRegex) {
+    if ($ProxyDef -match $script:AliasTipsProxyFunctionRegex) {
       $CleanedCommand = ("$($matches['cmd'].TrimStart()) $($matches['params'])") | Format-Command
-      
+
       if ($ProxyDef -match '\$args') {
         # Use the shorter of two if we already have hashed this command
         if ($Hash.ContainsKey($CleanedCommand + ' $args')) {
@@ -23,7 +23,6 @@ function Get-Aliases {
         else {
           $Hash[$CleanedCommand + ' $args'] = $ProxyName
         }
-        
       }
 
       # quick alias
