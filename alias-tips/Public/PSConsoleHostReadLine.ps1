@@ -1,5 +1,5 @@
 # Store the original PSConsoleHostReadLine function when importing the module
-$global:AliasTipsOriginalPSConsoleHostReadLine = Get-Item Function:\PSConsoleHostReadLine -ErrorAction SilentlyContinue
+$script:AliasTipsOriginalPSConsoleHostReadLine = Get-Item Function:\PSConsoleHostReadLine -ErrorAction SilentlyContinue
 
 function PSConsoleHostReadLine {
   ## Get the execution status of the last accepted user input.
@@ -40,8 +40,8 @@ $DEFAULT_PSConsoleHostReadLine = {
 }
 
 $MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = {
-  if ($null -eq $global:AliasTipsOriginalPSConsoleHostReadLine) {
-    $global:AliasTipsOriginalPSConsoleHostReadLine = $DEFAULT_PSConsoleHostReadLine
+  if ($null -eq $script:AliasTipsOriginalPSConsoleHostReadLine) {
+    $script:AliasTipsOriginalPSConsoleHostReadLine = $DEFAULT_PSConsoleHostReadLine
   }
   $toFixStr = "Set-Item Function:\PSConsoleHostReadLine -Value `$AliasTipsOriginalPSConsoleHostReadLine"
   @"
@@ -51,5 +51,5 @@ $toFixStr
 "@ | Out-Host
   Set-Clipboard -Value $toFixStr
   # TODO is there a way to restore this automagically??
-  Set-Item Function:\PSConsoleHostReadLine -Value $AliasTipsOriginalPSConsoleHostReadLine -Force
+  Set-Item Function:\PSConsoleHostReadLine -Value $script:AliasTipsOriginalPSConsoleHostReadLine -Force
 }

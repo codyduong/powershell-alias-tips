@@ -3,3 +3,4 @@ Initialize-EnvVariable "ALIASTIPS_DISABLE" $false
 
 $AliasTipsHash = @{}
 $AliasTipsHashEvaluated = @{}
+$script:AliasTipsProxyFunctionRegex, $script:AliasTipsProxyFunctionRegexNoArgs = $null, $null

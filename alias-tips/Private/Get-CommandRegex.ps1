@@ -8,7 +8,7 @@ function Get-CommandRegex {
 
   process {
     # The parse is a bit naive...
-    if ($Command -match $global:AliasTipsProxyFunctionRegexNoArgs) {
+    if ($Command -match $script:AliasTipsProxyFunctionRegexNoArgs) {
       # Clean up the command by removing extra delimiting whitespace and backtick preceding newlines
       $CommandString = ("$($matches['cmd'].TrimStart())")
 

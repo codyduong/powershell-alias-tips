@@ -45,7 +45,6 @@ function Start-RegexThreadJob {
       }
     }
 
-
     Get-CommandsRegex | Get-ProxyFunctionRegexes
   }
 }

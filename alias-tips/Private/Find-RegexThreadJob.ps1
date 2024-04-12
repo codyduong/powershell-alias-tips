@@ -1,5 +1,5 @@
 function Find-RegexThreadJob {
-  if ($null -ne $global:AliasTipsProxyFunctionRegex -and $null -ne $global:AliasTipsProxyFunctionRegexNoArgs) {
+  if ($null -ne $script:AliasTipsProxyFunctionRegex -and $null -ne $script:AliasTipsProxyFunctionRegexNoArgs) {
     return
   }
 
@@ -14,5 +14,6 @@ function Find-RegexThreadJob {
   }
   $result = Receive-Job -Job $existingJob -Wait -AutoRemoveJob
 
-  $global:AliasTipsProxyFunctionRegex, $global:AliasTipsProxyFunctionRegexNoArgs = $result
+  # this is a regex to find all commands, not just aliases/functions
+  $script:AliasTipsProxyFunctionRegex, $script:AliasTipsProxyFunctionRegexNoArgs = $result
 }

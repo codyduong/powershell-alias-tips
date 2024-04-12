@@ -19,8 +19,7 @@ InModuleScope 'alias-tips' {
       Out-Null $args
     }
 
-    $global:AliasTipsProxyFunctionRegex, $global:AliasTipsProxyFunctionRegexNoArgs = $null, $null
-    $global:AliasTipsHash = Find-AliasTips
+    Find-AliasTips
   }
   Describe 'Find-Alias' {
     it 'simple alias' {
@@ -67,12 +66,10 @@ InModuleScope 'alias-tips' {
 
     Remove-Item Env:\PESTER -ErrorAction SilentlyContinue
     Remove-Item alias:as_s -ErrorAction SilentlyContinue
-    Remove-Item alias:as_f -ErrorAction SilentlyContinue
-    Remove-Item alias:as_f_long -ErrorAction SilentlyContinue
+    Remove-Item function:as_f -ErrorAction SilentlyContinue
+    Remove-Item function:as_f_long -ErrorAction SilentlyContinue
 
-    Remove-Variable -Scope global -Name "AliasTipsHash" -ErrorAction SilentlyContinue
-    Remove-Variable -Scope global -Name "AliasTipsProxyFunctionRegex" -ErrorAction SilentlyContinue
-    Remove-Variable -Scope global -Name "AliasTipsProxyFunctionRegexNoArgs" -ErrorAction SilentlyContinue
+    Find-AliasTips
 
     Get-Job -Name "FindAliasTipsJob" -ErrorAction SilentlyContinue | Stop-Job -PassThru | Remove-Job
 
