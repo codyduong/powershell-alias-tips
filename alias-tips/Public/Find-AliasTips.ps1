@@ -23,5 +23,15 @@ function Find-AliasTips {
       }
     })
 
+  $script:AliasTipsProxyFunctionRegex, $script:AliasTipsProxyFunctionRegexNoArgs = $null
+  $jobs = Get-Job -Name "FindAliasTipsJob" -ErrorAction SilentlyContinue
+  if ($null -ne $jobs) {
+    foreach ($job in $jobs) {
+      Stop-Job -Job $job
+      Remove-Job -Job $job
+    }
+  }
+  Start-RegexThreadJob
+
   Set-Content -Path $AliasTipsHashFile -Value $Value
 }
